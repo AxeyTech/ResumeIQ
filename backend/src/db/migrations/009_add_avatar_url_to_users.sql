@@ -3,7 +3,7 @@
 
 -- UP
 ALTER TABLE users
-  ADD COLUMN avatar_url TEXT;
+  ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 -- DOWN
 ALTER TABLE users

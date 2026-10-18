@@ -3,7 +3,7 @@
 
 -- UP
 ALTER TABLE users
-  ADD COLUMN username CITEXT;
+  ADD COLUMN IF NOT EXISTS username CITEXT;
 
 -- Backfill existing users with a sanitized username derived from their email prefix
 UPDATE users
@@ -26,7 +26,7 @@ WHERE LENGTH(username) < 3;
 ALTER TABLE users
   ALTER COLUMN username SET NOT NULL;
 
-CREATE UNIQUE INDEX users_username_key ON users (username);
+CREATE UNIQUE INDEX IF NOT EXISTS users_username_key ON users (username);
 
 ALTER TABLE users
   ADD CONSTRAINT users_username_format_check
