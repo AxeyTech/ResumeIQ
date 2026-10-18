@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: resumeiq
+    name: getresumeiq
     env: node
     plan: free
     region: singapore
@@ -13,7 +13,7 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        value: https://resumeiq.onrender.com
+        value: https://getresumeiq.onrender.com
       - key: PGSSL
         value: "true"
       - key: DATABASE_URL
@@ -29,7 +29,7 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
       - key: GOOGLE_REDIRECT_URI
-        value: https://resumeiq.onrender.com/auth/google/callback
+        value: https://getresumeiq.onrender.com/auth/google/callback
       - key: SMTP_USER
         sync: false
       - key: SMTP_PASS
