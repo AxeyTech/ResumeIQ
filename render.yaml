@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: resumeiq
+    env: node
+    plan: free
+    region: singapore
+    buildCommand: npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend
+    preDeployCommand: npm run migrate --prefix backend
+    startCommand: node backend/src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        value: https://resumeiq.onrender.com
+      - key: PGSSL
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        value: https://resumeiq.onrender.com/auth/google/callback
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

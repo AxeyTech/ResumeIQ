@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-line-soft dark:border-night-line;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-body antialiased transition-colors duration-500;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    overflow-x: clip;
+  }
+
+  html.dark body {
+    @apply bg-night text-moon;
+  }
+
+  /* Form controls global high-contrast defaults */
+  input, textarea, select {
+    @apply text-ink dark:text-moon placeholder:text-ink-faint dark:placeholder:text-moon-soft/50 border-line dark:border-night-line;
+  }
+
+  ::selection {
+    @apply bg-g-blue/25 text-ink dark:text-moon;
+  }
+
+  :focus-visible {
+    outline: 2px solid #4285F4;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply inline-flex items-center gap-3 font-ui text-[11px] font-semibold uppercase tracking-widest2
+           text-g-blue-dim dark:text-g-blue;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply w-8 h-px bg-gradient-to-r from-g-blue via-g-red to-g-yellow;
+  }
+
+  /* ---------- Glassmorphism ---------- */
+  .glass {
+    @apply bg-white/95 dark:bg-night-panel/50 backdrop-blur-xl border border-line dark:border-night-line shadow-card;
+  }
+  .glass-strong {
+    @apply bg-white dark:bg-night-panel/80 backdrop-blur-2xl border border-line dark:border-night-line shadow-card;
+  }
+
+  /* ---------- Gradient text ---------- */
+  .text-gradient {
+    @apply bg-g-gradient bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-x;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn-primary {
+    @apply relative inline-flex items-center gap-2 overflow-hidden rounded-full
+           bg-ink dark:bg-moon text-canvas dark:text-night font-ui font-semibold text-sm
+           px-8 py-4 transition-all duration-300 ease-out
+           hover:-translate-y-0.5 hover:shadow-glow-soft active:translate-y-0;
+  }
+  .btn-primary .sheen {
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-primary:hover .sheen {
+    @apply translate-x-full;
+  }
+
+  .btn-glow {
+    @apply relative inline-flex items-center gap-2 overflow-hidden rounded-full
+           bg-g-gradient bg-[length:200%_auto] text-white font-ui font-semibold text-sm
+           px-7 py-3.5 transition-all duration-300 ease-out
+           hover:bg-right hover:-translate-y-0.5 hover:shadow-glow-blue active:translate-y-0;
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center gap-2 font-ui font-semibold text-sm
+           text-ink dark:text-moon pb-1;
+  }
+  .btn-ghost::after {
+    content: '';
+    @apply absolute left-0 -bottom-0.5 h-px w-full bg-gradient-to-r from-g-blue to-g-green origin-left transition-transform duration-300;
+    transform: scaleX(0.3);
+  }
+  .btn-ghost:hover::after {
+    transform: scaleX(1);
+  }
+
+  .btn-outline-glass {
+    @apply relative inline-flex items-center gap-2 rounded-full glass font-ui font-semibold text-sm
+           px-7 py-3.5 text-ink dark:text-moon transition-all duration-300 ease-out
+           hover:-translate-y-0.5 hover:shadow-card-hover hover:border-g-blue/40;
+  }
+
+  .nav-link {
+    @apply relative font-ui text-[13px] text-ink-soft dark:text-moon-soft transition-colors duration-200
+           hover:text-ink dark:hover:text-moon;
+  }
+  .nav-link::after {
+    content: '';
+    @apply absolute left-0 -bottom-1 h-px w-0 bg-gradient-to-r from-g-blue to-g-green transition-all duration-300 ease-out;
+  }
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  .card-lift {
+    @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-card-hover;
+  }
+
+  .grain-overlay {
+    @apply pointer-events-none fixed inset-0 z-[2] bg-grain opacity-20 dark:opacity-[0.15];
+  }
+
+  /* ---------- Aurora animated background ---------- */
+  .aurora-field {
+    @apply pointer-events-none absolute inset-0 overflow-hidden;
+  }
+  .aurora-blob {
+    @apply absolute rounded-full blur-3xl opacity-40 dark:opacity-30 animate-aurora;
+  }
+}
+
+@layer utilities {
+  .mask-radial-fade {
+    mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+  }
+}
+
+/* Disable the default cross-fade so our custom circular clip-path reveal
+   (driven from ThemeContext) is the only visible transition effect. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
