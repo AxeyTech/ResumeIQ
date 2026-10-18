@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "ResumeIQ — AI-Powered ATS & Resume Optimization Platform",
+  "license": "MIT",
   "scripts": {
     "install:all": "npm install --include=dev --prefix backend && npm install --include=dev --prefix frontend",
     "build": "npm run build --prefix frontend",
