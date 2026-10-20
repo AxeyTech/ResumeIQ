@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, LayoutDashboard, LogOut, Menu, X, LogIn } from 'lucide-react'
+import { ArrowRight, LogOut, Menu, X, LogIn } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 
@@ -78,9 +78,9 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
             <div className="flex items-center gap-2 sm:gap-2.5">
               <button
                 onClick={onGoToDashboard}
-                className="btn-glow text-xs py-2 px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2"
+                className="btn-glow text-xs py-2 px-3.5 sm:px-4 flex items-center justify-center font-medium"
               >
-                <LayoutDashboard size={14} /> <span className="hidden xs:inline">Dashboard</span>
+                Dashboard
               </button>
               <button
                 onClick={logout}
