@@ -85,17 +85,7 @@ export function resumeStoragePath(fileName) {
   return path.join(env.UPLOAD_DIR, fileName);
 }
 
-const AVATAR_DIR = path.join(env.UPLOAD_DIR, 'avatars');
-fs.mkdirSync(AVATAR_DIR, { recursive: true });
-
-const avatarStorage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, AVATAR_DIR),
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split('/')[1] || 'png';
-    const safeExt = ext === 'jpeg' ? 'jpg' : ext.replace(/[^a-z0-9]/gi, '');
-    cb(null, `avatar-${req.user.id}-${Date.now()}.${safeExt}`);
-  },
-});
+const avatarMemoryStorage = multer.memoryStorage();
 
 function avatarFilter(_req, file, cb) {
   if (!file.mimetype.startsWith('image/')) {
@@ -105,8 +95,8 @@ function avatarFilter(_req, file, cb) {
 }
 
 export const uploadAvatar = multer({
-  storage: avatarStorage,
+  storage: avatarMemoryStorage,
   fileFilter: avatarFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
 }).single('avatar');
 

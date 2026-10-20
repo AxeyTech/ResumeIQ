@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { userRepository } from '../repositories/user.repository.js';
 import { hashPassword, verifyPassword } from '../utils/password.js';
 import { signAccessToken } from '../utils/jwt.js';
@@ -7,12 +9,24 @@ import { ApiError } from '../utils/apiError.js';
 import { logger } from '../config/logger.js';
 
 function toPublicUser(user) {
+  let avatarUrl = user.avatar_url;
+  // If avatarUrl points to an old local disk path that no longer exists, gracefully nullify
+  if (avatarUrl && avatarUrl.startsWith('/uploads/')) {
+    try {
+      const fullPath = path.resolve(process.cwd(), avatarUrl.replace(/^\//, ''));
+      if (!fs.existsSync(fullPath)) {
+        avatarUrl = null;
+      }
+    } catch {
+      avatarUrl = null;
+    }
+  }
   return {
     id: user.id,
     email: user.email,
     name: user.name,
     username: user.username,
-    avatarUrl: user.avatar_url,
+    avatarUrl,
     role: user.role,
     hasGoogleLinked: Boolean(user.has_google ?? user.google_id),
     emailVerified: Boolean(user.email_verified),

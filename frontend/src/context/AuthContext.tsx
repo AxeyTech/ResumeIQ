@@ -10,6 +10,7 @@ interface AuthContextType {
   verifyEmail: (email: string, code: string) => Promise<void>;
   updateProfile: (data: { name?: string; username?: string; avatarUrl?: string | null }) => Promise<void>;
   uploadAvatar: (file: File) => Promise<void>;
+  deleteAvatar: () => Promise<void>;
   logout: () => void;
 }
 
@@ -74,6 +75,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(res.user);
   };
 
+  const deleteAvatar = async () => {
+    const res = await api.deleteAvatar();
+    setUser(res.user);
+  };
+
   const logout = () => {
     localStorage.removeItem('resumeiq_token');
     setUser(null);
@@ -81,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, verifyEmail, updateProfile, uploadAvatar, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, register, verifyEmail, updateProfile, uploadAvatar, deleteAvatar, logout }}>
       {children}
     </AuthContext.Provider>
   );

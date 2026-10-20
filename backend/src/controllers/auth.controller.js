@@ -70,10 +70,12 @@ export const authController = {
 
   /** POST /auth/avatar */
   uploadAvatar: asyncHandler(async (req, res) => {
-    if (!req.file) {
+    if (!req.file || !req.file.buffer) {
       throw ApiError.badRequest('No image file uploaded.');
     }
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    const mimeType = req.file.mimetype || 'image/jpeg';
+    const base64Data = req.file.buffer.toString('base64');
+    const avatarUrl = `data:${mimeType};base64,${base64Data}`;
     const user = await authService.updateProfile(req.user.id, { avatarUrl });
     res.status(200).json({ user });
   }),

@@ -52,8 +52,61 @@ interface DashboardProps {
   onBackToHome: () => void
 }
 
+function compressImageForAvatar(file: File): Promise<File> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas')
+          const maxDim = 360
+          canvas.width = maxDim
+          canvas.height = maxDim
+          const ctx = canvas.getContext('2d')
+          if (!ctx) return resolve(file)
+
+          // Center crop to a square
+          const minSide = Math.min(img.width, img.height)
+          const startX = (img.width - minSide) / 2
+          const startY = (img.height - minSide) / 2
+
+          ctx.drawImage(img, startX, startY, minSide, minSide, 0, 0, maxDim, maxDim)
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) return resolve(file)
+              const compressedFile = new File([blob], 'avatar.jpg', {
+                type: 'image/jpeg',
+              })
+              resolve(compressedFile)
+            },
+            'image/jpeg',
+            0.85
+          )
+        } catch {
+          resolve(file)
+        }
+      }
+      img.onerror = () => resolve(file)
+      img.src = e.target?.result as string
+    }
+    reader.onerror = () => resolve(file)
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function Dashboard({ onBackToHome }: DashboardProps) {
-  const { user, logout, updateProfile, uploadAvatar } = useAuth()
+  const { user, logout, updateProfile, uploadAvatar, deleteAvatar } = useAuth()
+
+  // Avatar error states & loading
+  const [avatarError, setAvatarError] = useState(false)
+  const [modalAvatarError, setModalAvatarError] = useState(false)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+
+  useEffect(() => {
+    setAvatarError(false)
+    setModalAvatarError(false)
+  }, [user?.avatarUrl])
 
   // State
   const [resumes, setResumes] = useState<ResumeItem[]>([])
@@ -314,11 +367,12 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
       {/* Top Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-line dark:border-night-line gap-4">
         <div className="flex items-center gap-4">
-          {user?.avatarUrl ? (
+          {user?.avatarUrl && !avatarError ? (
             <img
               src={user.avatarUrl}
               alt={user.name || 'Avatar'}
               className="w-12 h-12 rounded-2xl object-cover shadow-glow-blue border-2 border-g-blue/30"
+              onError={() => setAvatarError(true)}
             />
           ) : (
             <div className="w-12 h-12 rounded-2xl bg-g-gradient flex items-center justify-center font-bold text-white shadow-glow-blue text-lg">
@@ -1123,15 +1177,21 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
               {/* Avatar Upload */}
               <div className="flex flex-col items-center gap-3 pb-4 border-b border-line dark:border-night-line">
                 <div className="relative group">
-                  {user?.avatarUrl ? (
+                  {user?.avatarUrl && !modalAvatarError ? (
                     <img
                       src={user.avatarUrl}
                       alt="Profile"
-                      className="w-20 h-20 rounded-2xl object-cover border-2 border-g-blue/30"
+                      className="w-20 h-20 rounded-2xl object-cover border-2 border-g-blue/30 shadow-md"
+                      onError={() => setModalAvatarError(true)}
                     />
                   ) : (
-                    <div className="w-20 h-20 rounded-2xl bg-g-gradient flex items-center justify-center font-bold text-white text-2xl">
+                    <div className="w-20 h-20 rounded-2xl bg-g-gradient flex items-center justify-center font-bold text-white text-2xl shadow-md">
                       {user?.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  {avatarUploading && (
+                    <div className="absolute inset-0 rounded-2xl bg-black/60 flex items-center justify-center z-10">
+                      <Loader2 size={24} className="animate-spin text-white" />
                     </div>
                   )}
                   <label
@@ -1141,30 +1201,60 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                     <Settings size={20} className="text-white" />
                     <input
                       type="file"
-                      accept="image/jpeg,image/png,image/webp"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
                       className="hidden"
+                      disabled={avatarUploading}
                       onChange={async (e) => {
                         const file = e.target.files?.[0]
                         if (!file) return
-                        if (file.size > 2 * 1024 * 1024) {
-                          setProfileError('Image must be under 2MB.')
-                          return
-                        }
+                        setAvatarUploading(true)
                         try {
                           setProfileError(null)
-                          await uploadAvatar(file)
+                          const optimized = await compressImageForAvatar(file)
+                          await uploadAvatar(optimized)
+                          setAvatarError(false)
+                          setModalAvatarError(false)
                           setProfileSuccess(true)
-                          setTimeout(() => setProfileSuccess(false), 1500)
+                          setTimeout(() => setProfileSuccess(false), 2000)
                         } catch (err: any) {
-                          setProfileError(err?.message || 'Failed to upload avatar.')
+                          setProfileError(err?.message || 'Failed to upload profile picture.')
+                        } finally {
+                          setAvatarUploading(false)
+                          e.target.value = ''
                         }
                       }}
                     />
                   </label>
                 </div>
-                <p className="text-[10px] text-ink-faint dark:text-moon-soft">
-                  Hover &amp; click to upload a profile picture (JPG, PNG, WebP &bull; Max 2MB)
-                </p>
+                <div className="flex flex-col items-center gap-1">
+                  <p className="text-[10px] text-ink-faint dark:text-moon-soft">
+                    Hover &amp; click to change picture (JPG, PNG, WebP)
+                  </p>
+                  {user?.avatarUrl && (
+                    <button
+                      type="button"
+                      disabled={avatarUploading}
+                      onClick={async () => {
+                        try {
+                          setAvatarUploading(true)
+                          setProfileError(null)
+                          await deleteAvatar()
+                          setAvatarError(false)
+                          setModalAvatarError(false)
+                          setProfileSuccess(true)
+                          setTimeout(() => setProfileSuccess(false), 1500)
+                        } catch (err: any) {
+                          setProfileError(err?.message || 'Failed to remove picture.')
+                        } finally {
+                          setAvatarUploading(false)
+                        }
+                      }}
+                      className="text-[11px] font-medium text-red-500 hover:text-red-600 transition-colors"
+                    >
+                      Remove picture
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div>
