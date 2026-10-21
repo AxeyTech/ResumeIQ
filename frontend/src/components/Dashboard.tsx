@@ -32,7 +32,10 @@ import {
   Play,
   LucideIcon,
   Zap,
-  Scan
+  Scan,
+  Target,
+  Building2,
+  ChevronUp
 } from 'lucide-react'
 import ScoreRing from './ScoreRing'
 import BulletOptimizer from './BulletOptimizer'
@@ -50,6 +53,7 @@ import { useAuth } from '../context/AuthContext'
 import { api, ResumeItem, AnalysisResult, AuditReport } from '../services/api'
 
 export type ActiveSuiteTab = 'audit' | 'radar' | 'builder' | 'appkit' | 'interview' | 'tools'
+export type AuditSubView = 'scorecard' | 'readiness' | 'simulator'
 
 interface DashboardProps {
   onBackToHome: () => void
@@ -120,6 +124,8 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
 
   // Active Workspace Suite Tab
   const [activeSuiteTab, setActiveSuiteTab] = useState<ActiveSuiteTab>('audit')
+  const [auditSubView, setAuditSubView] = useState<AuditSubView>('scorecard')
+  const [isJdExpanded, setIsJdExpanded] = useState(false)
 
   // AI Copilot Chatbot State (Step 5)
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
@@ -369,7 +375,7 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-canvas dark:bg-night text-ink dark:text-moon pt-6 pb-24 px-4 sm:px-6 md:px-8 max-w-[1300px] mx-auto">
+    <div className="min-h-screen bg-canvas dark:bg-night text-ink dark:text-moon pt-6 pb-24 px-4 sm:px-6 md:px-8 max-w-[1440px] xl:max-w-[1536px] mx-auto">
       {/* Top Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-line dark:border-night-line gap-4">
         <div className="flex items-center gap-4">
@@ -436,9 +442,9 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
-        {/* Left Column: Resumes & Version Tracker (4 cols) */}
-        <div className="lg:col-span-4 space-y-6">
+      <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
+        {/* Left Column: Resumes & Version Tracker (4 cols on lg, 3 cols on xl) */}
+        <div className="lg:col-span-4 xl:col-span-3 space-y-6">
           {/* Upload Card */}
           <div className="glass rounded-3xl p-6 border border-line dark:border-night-line">
             <h2 className="font-display font-semibold text-base mb-2 flex items-center gap-2">
@@ -557,8 +563,8 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
           </div>
         </div>
 
-        {/* Right Column: Active Resume Workspace & Analysis (8 cols) */}
-        <div className="lg:col-span-8 space-y-6">
+        {/* Right Column: Active Resume Workspace & Analysis (8 cols on lg, 9 cols on xl) */}
+        <div className="lg:col-span-8 xl:col-span-9 space-y-6">
           {selectedResume ? (
             <>
               {/* Document Header & Suite Navigation Hub */}
@@ -664,13 +670,74 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
               {/* Suite 1: ATS Audit & Scan */}
               {activeSuiteTab === 'audit' && (
                 <div className="space-y-6">
-                  {/* Target Job Description & Audit Trigger Card */}
-                  <div className="glass rounded-3xl p-6 sm:p-8 border border-line dark:border-night-line shadow-card">
-                    <div className="mb-6">
-                      <label className="block font-display font-medium text-sm mb-2 flex items-center gap-2 text-ink dark:text-moon">
-                        <Briefcase size={16} className="text-g-yellow" />
-                        Target Job Description (Optional for Keyword Gap Analysis)
-                      </label>
+                  {/* Target Job Description Card (Collapsible when analysis is active) */}
+                  {analysisResult && !isJdExpanded ? (
+                    <div className="glass rounded-2xl p-4 sm:p-5 border border-line dark:border-night-line shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-g-yellow/10 text-g-yellow flex items-center justify-center shrink-0">
+                          <Briefcase size={18} />
+                        </div>
+                        <div className="truncate">
+                          <div className="flex items-center gap-2">
+                            <span className="font-display font-semibold text-xs sm:text-sm text-ink dark:text-moon">
+                              Target Job Description Attached
+                            </span>
+                            {jobDescription.trim().length >= 30 ? (
+                              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                {jobDescription.trim().length} chars
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-g-blue/10 text-g-blue border border-g-blue/20">
+                                Industry Standard
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-ink-soft dark:text-moon-soft truncate mt-0.5 max-w-xl">
+                            {jobDescription.trim() ? jobDescription.trim().slice(0, 100) : 'Using standard software industry skills benchmark for semantic gap scoring.'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => setIsJdExpanded(true)}
+                          className="btn-outline-glass text-xs py-1.5 px-3 flex items-center gap-1.5"
+                          title="View or modify target job description"
+                        >
+                          <FileEdit size={13} />
+                          <span>Modify JD</span>
+                        </button>
+                        <button
+                          onClick={handleRunAnalysis}
+                          disabled={analyzing}
+                          className="btn-glow text-xs py-1.5 px-3.5 flex items-center gap-1.5"
+                          title="Re-run ATS & semantic analysis"
+                        >
+                          {analyzing ? (
+                            <Loader2 size={13} className="animate-spin" />
+                          ) : (
+                            <RefreshCw size={13} />
+                          )}
+                          <span>{analyzing ? 'Analyzing...' : 'Re-run Scan'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="glass rounded-3xl p-6 sm:p-8 border border-line dark:border-night-line shadow-card">
+                      <div className="flex items-center justify-between mb-4">
+                        <label className="block font-display font-medium text-sm flex items-center gap-2 text-ink dark:text-moon">
+                          <Briefcase size={16} className="text-g-yellow" />
+                          Target Job Description (Optional for Keyword Gap Analysis)
+                        </label>
+                        {analysisResult && (
+                          <button
+                            onClick={() => setIsJdExpanded(false)}
+                            className="text-xs text-ink-soft hover:text-ink dark:hover:text-moon flex items-center gap-1"
+                          >
+                            <ChevronUp size={14} /> Collapse
+                          </button>
+                        )}
+                      </div>
                       <p className="text-xs text-ink-soft dark:text-moon-soft mb-3">
                         Paste the job description of the role you are targeting. ResumeIQ will compute semantic match score and highlight missing required skills.
                       </p>
@@ -679,47 +746,55 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                         value={jobDescription}
                         onChange={(e) => setJobDescription(e.target.value)}
                         placeholder="e.g. We are seeking a Full Stack Software Engineer proficient in React, Node.js, PostgreSQL, Docker, and REST APIs with 2+ years of experience in agile software delivery..."
-                        className="w-full rounded-2xl border border-line dark:border-night-line bg-white dark:bg-night-panel/60 p-4 text-xs font-ui text-ink dark:text-moon placeholder:text-ink-faint dark:placeholder:text-moon-soft/50 focus:outline-none focus:border-g-blue focus:shadow-glow-soft transition-all shadow-sm"
+                        className="w-full rounded-2xl border border-line dark:border-night-line bg-white dark:bg-night-panel/60 p-4 text-xs font-ui text-ink dark:text-moon placeholder:text-ink-faint dark:placeholder:text-moon-soft/50 focus:outline-none focus:border-g-blue focus:shadow-glow-soft transition-all shadow-sm mb-4"
                       />
-                    </div>
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="text-xs text-ink-soft dark:text-moon-soft">
+                          {jobDescription.trim().length >= 30 ? (
+                            <span className="text-emerald-500 font-medium flex items-center gap-1.5">
+                              <Check size={14} /> JD Attached ({jobDescription.trim().length} chars)
+                            </span>
+                          ) : (
+                            <span>JD optional &bull; Defaults to standard industry benchmark</span>
+                          )}
+                        </div>
 
-                    {/* Action Trigger */}
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                      <div className="text-xs text-ink-soft dark:text-moon-soft">
-                        {jobDescription.trim().length >= 30 ? (
-                          <span className="text-emerald-500 font-medium flex items-center gap-1.5">
-                            <Check size={14} /> JD Attached ({jobDescription.trim().length} chars)
-                          </span>
-                        ) : (
-                          <span>JD optional &bull; Defaults to standard industry benchmark</span>
-                        )}
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                          {analysisResult && (
+                            <button
+                              onClick={() => setIsJdExpanded(false)}
+                              className="btn-outline-glass text-xs py-2 px-3 sm:px-4"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                          <button
+                            onClick={handleRunAnalysis}
+                            disabled={analyzing}
+                            className="btn-glow flex-1 sm:flex-initial px-6 py-2.5 sm:py-3 flex items-center justify-center gap-2 font-semibold text-sm disabled:opacity-75"
+                          >
+                            {analyzing ? (
+                              <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Running ATS &amp; AI Analysis...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles size={16} /> Run Comprehensive Analysis <ArrowRight size={15} />
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
 
-                      <button
-                        onClick={handleRunAnalysis}
-                        disabled={analyzing}
-                        className="btn-glow w-full sm:w-auto px-6 py-3 flex items-center justify-center gap-2 font-semibold text-sm disabled:opacity-75"
-                      >
-                        {analyzing ? (
-                          <>
-                            <Loader2 size={16} className="animate-spin" />
-                            Running ATS &amp; AI Analysis...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles size={16} /> Run Comprehensive Analysis <ArrowRight size={15} />
-                          </>
-                        )}
-                      </button>
+                      {analysisError && (
+                        <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs flex items-center gap-2">
+                          <AlertTriangle size={15} className="shrink-0" />
+                          <span>{analysisError}</span>
+                        </div>
+                      )}
                     </div>
-
-                    {analysisError && (
-                      <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs flex items-center gap-2">
-                        <AlertTriangle size={15} className="shrink-0" />
-                        <span>{analysisError}</span>
-                      </div>
-                    )}
-                  </div>
+                  )}
 
                   {/* Analysis Results View */}
                   {analysisResult ? (
@@ -797,252 +872,297 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                         </div>
                       </div>
 
-                      {/* Interview Readiness & Recruiter Probability Card */}
-                      <InterviewReadinessCard
-                        analysis={analysisResult}
-                        report={auditReport}
-                        candidateName={user?.name || selectedResume.displayName?.replace(/\.[^/.]+$/, '')}
-                        roleTitle={selectedResume.displayName?.replace(/\.[^/.]+$/, '') || 'Software Engineer'}
-                        fileName={selectedResume.fileName}
-                        onSwitchToInterview={() => setActiveSuiteTab('interview')}
-                        onScrollToOptimizer={() => setActiveSuiteTab('tools')}
-                      />
+                      {/* Executive Cockpit Sub-View Switcher */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-1.5 rounded-2xl bg-canvas-deep/50 dark:bg-night-panel/50 border border-line dark:border-night-line">
+                        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                          <button
+                            onClick={() => setAuditSubView('scorecard')}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 shrink-0 ${
+                              auditSubView === 'scorecard'
+                                ? 'bg-white dark:bg-night-surface text-ink dark:text-moon shadow-sm border border-g-blue/30 ring-1 ring-g-blue/20'
+                                : 'text-ink-soft hover:text-ink dark:text-moon-soft dark:hover:text-moon hover:bg-white/40 dark:hover:bg-night-surface/40'
+                            }`}
+                          >
+                            <BarChart3 size={14} className={auditSubView === 'scorecard' ? 'text-g-blue' : ''} />
+                            <span>ATS Diagnostics &amp; Gaps</span>
+                          </button>
 
-                      {/* Knockout Criteria & Hard Red-Flag Radar */}
-                      <KnockoutRadar
-                        analysisId={analysisResult.id}
-                        onSwitchToBuilder={() => setActiveSuiteTab('builder')}
-                      />
+                          <button
+                            onClick={() => setAuditSubView('readiness')}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 shrink-0 ${
+                              auditSubView === 'readiness'
+                                ? 'bg-white dark:bg-night-surface text-ink dark:text-moon shadow-sm border border-emerald-500/30 ring-1 ring-emerald-500/20'
+                                : 'text-ink-soft hover:text-ink dark:text-moon-soft dark:hover:text-moon hover:bg-white/40 dark:hover:bg-night-surface/40'
+                            }`}
+                          >
+                            <Target size={14} className={auditSubView === 'readiness' ? 'text-emerald-500' : ''} />
+                            <span>Recruiter Readiness &amp; STAR</span>
+                          </button>
 
-                      {/* Company-Specific ATS Simulator & Recruiter Persona Scan */}
-                      <CompanySimulator analysisId={analysisResult.id} />
-
-                      {/* Score Highlights Grid */}
-                      <div className="grid sm:grid-cols-2 gap-6">
-                        <div className="glass rounded-3xl p-6 border border-line dark:border-night-line flex items-center gap-6 shadow-card">
-                          <div className="shrink-0">
-                            <ScoreRing
-                              to={analysisResult.atsCompatibilityScore}
-                              size={110}
-                              strokeWidth={7}
-                              ringColor={
-                                analysisResult.atsCompatibilityScore >= 75
-                                  ? '#34A853'
-                                  : analysisResult.atsCompatibilityScore >= 50
-                                  ? '#FBBC05'
-                                  : '#EA4335'
-                              }
-                            />
-                          </div>
-                          <div>
-                            <div className="eyebrow mb-1">ATS Format Score</div>
-                            <h4 className="font-display font-semibold text-lg">
-                              {analysisResult.atsCompatibilityScore >= 75
-                                ? 'ATS Compatible'
-                                : analysisResult.atsCompatibilityScore >= 50
-                                ? 'Fair Formatting'
-                                : 'Formatting Gaps'}
-                            </h4>
-                            <p className="text-xs text-ink-soft dark:text-moon-soft mt-1">
-                              Evaluates heading detection, single-column parsing, margins, and contact info visibility.
-                            </p>
-                          </div>
+                          <button
+                            onClick={() => setAuditSubView('simulator')}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 shrink-0 ${
+                              auditSubView === 'simulator'
+                                ? 'bg-white dark:bg-night-surface text-ink dark:text-moon shadow-sm border border-purple-500/30 ring-1 ring-purple-500/20'
+                                : 'text-ink-soft hover:text-ink dark:text-moon-soft dark:hover:text-moon hover:bg-white/40 dark:hover:bg-night-surface/40'
+                            }`}
+                          >
+                            <Building2 size={14} className={auditSubView === 'simulator' ? 'text-purple-500' : ''} />
+                            <span>Company ATS Simulators</span>
+                          </button>
                         </div>
 
-                        <div className="glass rounded-3xl p-6 border border-line dark:border-night-line flex items-center gap-6 shadow-card">
-                          <div className="shrink-0">
-                            <ScoreRing
-                              to={analysisResult.keywordMatchScore}
-                              size={110}
-                              strokeWidth={7}
-                              ringColor="#4285F4"
-                            />
-                          </div>
-                          <div>
-                            <div className="eyebrow mb-1">Keyword Match</div>
-                            <h4 className="font-display font-semibold text-lg">
-                              {analysisResult.keywordMatchScore}% Alignment
-                            </h4>
-                            <p className="text-xs text-ink-soft dark:text-moon-soft mt-1">
-                              Semantic relevance score against the target job requirements or industry skills benchmark.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* PDF Download Banner */}
-                      <div className="glass rounded-2xl p-5 border border-g-blue/30 bg-g-blue/5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-card">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-g-blue flex items-center justify-center text-white">
-                            <Download size={20} />
-                          </div>
-                          <div>
-                            <div className="font-semibold text-sm">Download Official Audit Report</div>
-                            <div className="text-xs text-ink-soft dark:text-moon-soft">
-                              Comprehensive PDF artifact with scores, missing keywords, and recruiter action items.
-                            </div>
-                          </div>
-                        </div>
+                        {/* Quick Export PDF */}
                         <button
                           onClick={handleDownloadPdf}
-                          className="btn-glow text-xs py-2.5 px-5 flex items-center gap-2 shrink-0"
+                          className="btn-outline-glass text-xs py-1.5 px-3.5 flex items-center justify-center gap-1.5 text-ink dark:text-moon hover:border-g-blue/60 shrink-0 self-end sm:self-auto"
+                          title="Download official PDF audit report"
                         >
-                          <Download size={14} /> Download PDF
+                          <Download size={13} className="text-g-blue" />
+                          <span>Download PDF</span>
                         </button>
                       </div>
 
-                      {/* Keywords Breakdown */}
-                      <div className="glass rounded-3xl p-6 sm:p-8 border border-line dark:border-night-line shadow-card">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="font-display font-semibold text-lg flex items-center gap-2">
-                            <Layers size={18} className="text-g-blue" /> Keyword Coverage Diagnostics
-                          </h3>
-                          {analysisResult.missingKeywords.length > 0 && (
-                            <button
-                              onClick={() => setActiveSuiteTab('builder')}
-                              className="text-xs font-semibold text-g-blue hover:underline flex items-center gap-1"
-                            >
-                              <Wand2 size={13} /> Fix in Resume Studio &rarr;
-                            </button>
-                          )}
-                        </div>
+                      {/* Sub-View 1: ATS Diagnostics & Gaps (Above-the-fold Viewport Optimized) */}
+                      {auditSubView === 'scorecard' && (
+                        <div className="space-y-6">
+                          {/* Score Highlights Grid */}
+                          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div className="glass rounded-3xl p-5 sm:p-6 border border-line dark:border-night-line flex items-center gap-5 shadow-card">
+                              <div className="shrink-0">
+                                <ScoreRing
+                                  to={analysisResult.atsCompatibilityScore}
+                                  size={105}
+                                  strokeWidth={7}
+                                  ringColor={
+                                    analysisResult.atsCompatibilityScore >= 75
+                                      ? '#34A853'
+                                      : analysisResult.atsCompatibilityScore >= 50
+                                      ? '#FBBC05'
+                                      : '#EA4335'
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <div className="eyebrow mb-1">ATS Format Score</div>
+                                <h4 className="font-display font-semibold text-base sm:text-lg">
+                                  {analysisResult.atsCompatibilityScore >= 75
+                                    ? 'ATS Compatible'
+                                    : analysisResult.atsCompatibilityScore >= 50
+                                    ? 'Fair Formatting'
+                                    : 'Formatting Gaps'}
+                                </h4>
+                                <p className="text-xs text-ink-soft dark:text-moon-soft mt-1 leading-relaxed">
+                                  Evaluates heading detection, single-column parsing, margins, and contact info visibility.
+                                </p>
+                              </div>
+                            </div>
 
-                        <div className="grid md:grid-cols-2 gap-6">
-                          {/* Matched Keywords */}
-                          <div>
-                            <h5 className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3 flex items-center gap-1.5">
-                              <CheckCircle size={14} /> Matched Keywords ({analysisResult.matchedKeywords.length})
-                            </h5>
-                            {analysisResult.matchedKeywords.length === 0 ? (
-                              <div className="text-xs text-ink-faint p-4 border border-dashed rounded-xl">
-                                No direct matches found. Add relevant skills from the JD.
+                            <div className="glass rounded-3xl p-5 sm:p-6 border border-line dark:border-night-line flex items-center gap-5 shadow-card">
+                              <div className="shrink-0">
+                                <ScoreRing
+                                  to={analysisResult.keywordMatchScore}
+                                  size={105}
+                                  strokeWidth={7}
+                                  ringColor="#4285F4"
+                                />
                               </div>
-                            ) : (
-                              <div className="flex flex-wrap gap-2">
-                                {analysisResult.matchedKeywords.map((k) => (
-                                  <span
-                                    key={k}
-                                    className="text-xs font-medium px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
-                                  >
-                                    {k}
-                                  </span>
-                                ))}
+                              <div>
+                                <div className="eyebrow mb-1">Keyword Match</div>
+                                <h4 className="font-display font-semibold text-base sm:text-lg">
+                                  {analysisResult.keywordMatchScore}% Alignment
+                                </h4>
+                                <p className="text-xs text-ink-soft dark:text-moon-soft mt-1 leading-relaxed">
+                                  Semantic relevance score against target job requirements or industry benchmark.
+                                </p>
                               </div>
-                            )}
+                            </div>
                           </div>
 
-                          {/* Missing Keywords */}
-                          <div>
-                            <div className="flex items-center justify-between gap-2 mb-3">
-                              <h5 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                                <AlertTriangle size={14} /> Missing Keywords ({analysisResult.missingKeywords.length})
-                              </h5>
-                              <button
-                                onClick={() => setActiveSuiteTab('tools')}
-                                className="btn-outline-glass text-xs py-1 px-2.5 flex items-center gap-1.5 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/10 transition-colors"
-                                title="Open AI Injector with these missing keywords"
-                              >
-                                <Zap size={12} className="text-amber-500" />
-                                <span className="font-medium">1-Click AI Injector</span>
-                                <ArrowRight size={11} />
-                              </button>
-                            </div>
-                            <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto pr-1">
-                              {analysisResult.missingKeywords.map((k) => (
+                          {/* Keywords Breakdown */}
+                          <div className="glass rounded-3xl p-5 sm:p-7 border border-line dark:border-night-line shadow-card">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="font-display font-semibold text-base sm:text-lg flex items-center gap-2">
+                                <Layers size={18} className="text-g-blue" /> Keyword Coverage Diagnostics
+                              </h3>
+                              {analysisResult.missingKeywords.length > 0 && (
                                 <button
-                                  key={k}
-                                  onClick={() => copyToClipboard(k)}
-                                  className="text-xs font-medium px-3 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 hover:bg-amber-500/20 flex items-center gap-1.5 transition-colors group"
-                                  title="Click to copy"
+                                  onClick={() => setActiveSuiteTab('builder')}
+                                  className="text-xs font-semibold text-g-blue hover:underline flex items-center gap-1"
                                 >
-                                  <span>{k}</span>
-                                  {copiedKeyword === k ? (
-                                    <Check size={11} className="text-emerald-500" />
-                                  ) : (
-                                    <Copy size={11} className="opacity-40 group-hover:opacity-100" />
-                                  )}
+                                  <Wand2 size={13} /> Fix in Resume Studio &rarr;
                                 </button>
-                              ))}
+                              )}
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                              {/* Matched Keywords */}
+                              <div>
+                                <h5 className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3 flex items-center gap-1.5">
+                                  <CheckCircle size={14} /> Matched Keywords ({analysisResult.matchedKeywords.length})
+                                </h5>
+                                {analysisResult.matchedKeywords.length === 0 ? (
+                                  <div className="text-xs text-ink-faint p-4 border border-dashed rounded-xl">
+                                    No direct matches found. Add relevant skills from the JD.
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-[180px] overflow-y-auto pr-1">
+                                    {analysisResult.matchedKeywords.map((k) => (
+                                      <span
+                                        key={k}
+                                        className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+                                      >
+                                        {k}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Missing Keywords */}
+                              <div>
+                                <div className="flex items-center justify-between gap-2 mb-3">
+                                  <h5 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                                    <AlertTriangle size={14} /> Missing Keywords ({analysisResult.missingKeywords.length})
+                                  </h5>
+                                  <button
+                                    onClick={() => setActiveSuiteTab('tools')}
+                                    className="btn-outline-glass text-xs py-1 px-2.5 flex items-center gap-1.5 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/10 transition-colors"
+                                    title="Open AI Injector with these missing keywords"
+                                  >
+                                    <Zap size={12} className="text-amber-500" />
+                                    <span className="font-medium">1-Click AI Injector</span>
+                                    <ArrowRight size={11} />
+                                  </button>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-[180px] overflow-y-auto pr-1">
+                                  {analysisResult.missingKeywords.map((k) => (
+                                    <button
+                                      key={k}
+                                      onClick={() => copyToClipboard(k)}
+                                      className="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 hover:bg-amber-500/20 flex items-center gap-1.5 transition-colors group"
+                                      title="Click to copy"
+                                    >
+                                      <span>{k}</span>
+                                      {copiedKeyword === k ? (
+                                        <Check size={11} className="text-emerald-500" />
+                                      ) : (
+                                        <Copy size={11} className="opacity-40 group-hover:opacity-100" />
+                                      )}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ATS Formatting Warnings & AI Recommendations */}
+                          <div className="grid md:grid-cols-2 gap-6">
+                            {/* ATS Issues */}
+                            <div className="glass rounded-3xl p-5 sm:p-6 border border-line dark:border-night-line shadow-card">
+                              <h4 className="font-display font-semibold text-base mb-4 flex items-center gap-2">
+                                <AlertTriangle size={16} className="text-red-500" />
+                                ATS Formatting Warnings ({analysisResult.issues.length})
+                              </h4>
+                              {analysisResult.issues.length === 0 ? (
+                                <div className="text-xs text-emerald-500 p-4 border border-emerald-500/20 rounded-xl bg-emerald-500/5 flex items-center gap-2">
+                                  <CheckCircle size={16} /> Clean formatting! Zero critical ATS parsing issues detected.
+                                </div>
+                              ) : (
+                                <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                                  {analysisResult.issues.map((issue, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="p-3.5 rounded-2xl bg-canvas-deep/40 dark:bg-night-panel/40 border border-line dark:border-night-line"
+                                    >
+                                      <div className="flex items-center justify-between gap-2 mb-1">
+                                        <span className="text-xs font-semibold">{issue.title}</span>
+                                        <span
+                                          className={`text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${
+                                            issue.severity === 'high'
+                                              ? 'bg-red-500/10 text-red-500'
+                                              : 'bg-amber-500/10 text-amber-500'
+                                          }`}
+                                        >
+                                          {issue.severity}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-ink-soft dark:text-moon-soft leading-relaxed">
+                                        {issue.message}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* AI Coach Recommendations */}
+                            <div className="glass rounded-3xl p-5 sm:p-6 border border-line dark:border-night-line shadow-card">
+                              <h4 className="font-display font-semibold text-base mb-4 flex items-center gap-2">
+                                <Sparkles size={16} className="text-g-blue" />
+                                AI Executive Recommendations
+                              </h4>
+                              {auditReport ? (
+                                <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                                  <div className="p-3.5 rounded-2xl bg-g-blue/5 border border-g-blue/20 text-xs italic text-ink-soft dark:text-moon-soft leading-relaxed">
+                                    &ldquo;{auditReport.summary}&rdquo;
+                                  </div>
+                                  {auditReport.recommendations.map((rec, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="p-3.5 rounded-2xl bg-canvas-deep/40 dark:bg-night-panel/40 border border-line dark:border-night-line"
+                                    >
+                                      <div className="flex items-center justify-between gap-2 mb-1">
+                                        <span className="text-xs font-semibold">{rec.title}</span>
+                                        <span className="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-g-blue">
+                                          {rec.priority}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-ink-soft dark:text-moon-soft leading-relaxed">
+                                        {rec.detail}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-xs text-ink-soft p-4 text-center">
+                                  Generating recommendations...
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Issues & Recommendations */}
-                      <div className="grid md:grid-cols-2 gap-6">
-                        {/* ATS Issues */}
-                        <div className="glass rounded-3xl p-6 border border-line dark:border-night-line shadow-card">
-                          <h4 className="font-display font-semibold text-base mb-4 flex items-center gap-2">
-                            <AlertTriangle size={16} className="text-red-500" />
-                            ATS Formatting Warnings ({analysisResult.issues.length})
-                          </h4>
-                          {analysisResult.issues.length === 0 ? (
-                            <div className="text-xs text-emerald-500 p-4 border border-emerald-500/20 rounded-xl bg-emerald-500/5 flex items-center gap-2">
-                              <CheckCircle size={16} /> Clean formatting! Zero critical ATS parsing issues detected.
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {analysisResult.issues.map((issue, idx) => (
-                                <div
-                                  key={idx}
-                                  className="p-3.5 rounded-2xl bg-canvas-deep/40 dark:bg-night-panel/40 border border-line dark:border-night-line"
-                                >
-                                  <div className="flex items-center justify-between gap-2 mb-1">
-                                    <span className="text-xs font-semibold">{issue.title}</span>
-                                    <span
-                                      className={`text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${
-                                        issue.severity === 'high'
-                                          ? 'bg-red-500/10 text-red-500'
-                                          : 'bg-amber-500/10 text-amber-500'
-                                      }`}
-                                    >
-                                      {issue.severity}
-                                    </span>
-                                  </div>
-                                  <p className="text-xs text-ink-soft dark:text-moon-soft leading-relaxed">
-                                    {issue.message}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                      {/* Sub-View 2: Recruiter Readiness & STAR Forecast */}
+                      {auditSubView === 'readiness' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <InterviewReadinessCard
+                            analysis={analysisResult}
+                            report={auditReport}
+                            candidateName={user?.name || selectedResume.displayName?.replace(/\.[^/.]+$/, '')}
+                            roleTitle={selectedResume.displayName?.replace(/\.[^/.]+$/, '') || 'Software Engineer'}
+                            fileName={selectedResume.fileName}
+                            onSwitchToInterview={() => setActiveSuiteTab('interview')}
+                            onScrollToOptimizer={() => setActiveSuiteTab('tools')}
+                          />
+                        </motion.div>
+                      )}
 
-                        {/* AI Coach Recommendations */}
-                        <div className="glass rounded-3xl p-6 border border-line dark:border-night-line shadow-card">
-                          <h4 className="font-display font-semibold text-base mb-4 flex items-center gap-2">
-                            <Sparkles size={16} className="text-g-blue" />
-                            AI Executive Recommendations
-                          </h4>
-                          {auditReport ? (
-                            <div className="space-y-3">
-                              <div className="p-3.5 rounded-2xl bg-g-blue/5 border border-g-blue/20 text-xs italic text-ink-soft dark:text-moon-soft leading-relaxed">
-                                &ldquo;{auditReport.summary}&rdquo;
-                              </div>
-                              {auditReport.recommendations.map((rec, idx) => (
-                                <div
-                                  key={idx}
-                                  className="p-3.5 rounded-2xl bg-canvas-deep/40 dark:bg-night-panel/40 border border-line dark:border-night-line"
-                                >
-                                  <div className="flex items-center justify-between gap-2 mb-1">
-                                    <span className="text-xs font-semibold">{rec.title}</span>
-                                    <span className="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-g-blue">
-                                      {rec.priority}
-                                    </span>
-                                  </div>
-                                  <p className="text-xs text-ink-soft dark:text-moon-soft leading-relaxed">
-                                    {rec.detail}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-xs text-ink-soft p-4 text-center">
-                              Generating recommendations...
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      {/* Sub-View 3: Company ATS Simulators */}
+                      {auditSubView === 'simulator' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <CompanySimulator analysisId={analysisResult.id} />
+                        </motion.div>
+                      )}
                     </motion.div>
                   ) : (
                     <div className="glass rounded-3xl p-8 text-center border border-line dark:border-night-line shadow-card">

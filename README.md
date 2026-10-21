@@ -86,6 +86,7 @@ Over **75% of resumes** are filtered out by automated Applicant Tracking Systems
 - **Obsidian Dark & Clean Light Modes**: Automatic system preference detection with zero flash of unstyled content (`localStorage` pre-paint script).
 - **Google 4-Color Prismatic Glow**: Subtle accents inspired by Google’s signature primary spectrum (`#4285F4`, `#EA4335`, `#FBBC05`, `#34A853`).
 - **Glassmorphic Depth**: Frosted backdrop filters, fluid micro-interactions powered by `Framer Motion`, and accessible contrast ratios.
+- **🖥️ Executive Cockpit UI Architecture**: Engineered for laptops, desktop monitors, and ultrawide displays to eliminate endless vertical scrolling. Features a collapsible JD banner (reclaiming 200px+ above the fold), a 5-action responsive suite strip, and instant sub-view switching (`📊 ATS Diagnostics & Gaps` | `🎯 Recruiter Readiness & STAR` | `🏢 Company ATS Simulators`).
 - **100% Fluid Responsive**: Pixel-perfect layout with 44px+ touch targets from compact mobile smartphones (320px) to 4K desktop displays.
 
 ---
