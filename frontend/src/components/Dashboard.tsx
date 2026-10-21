@@ -783,6 +783,11 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                       <InterviewReadinessCard
                         analysis={analysisResult}
                         report={auditReport}
+                        candidateName={user?.name || selectedResume.displayName?.replace(/\.[^/.]+$/, '')}
+                        roleTitle={selectedResume.displayName?.replace(/\.[^/.]+$/, '') || 'Software Engineer'}
+                        fileName={selectedResume.fileName}
+                        onSwitchToInterview={() => setActiveSuiteTab('interview')}
+                        onScrollToOptimizer={() => setActiveSuiteTab('tools')}
                       />
 
                       {/* Knockout Criteria & Hard Red-Flag Radar */}

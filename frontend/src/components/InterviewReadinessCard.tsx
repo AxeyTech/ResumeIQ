@@ -13,23 +13,34 @@ import {
   ChevronUp,
   FileSearch,
   CheckSquare,
-  Square
+  Square,
+  Mic
 } from 'lucide-react'
 import { AnalysisResult, AuditReport } from '../services/api'
+import AtsReadinessBadgeModal from './AtsReadinessBadgeModal'
 
 interface InterviewReadinessCardProps {
   analysis: AnalysisResult
   report?: AuditReport | null
+  candidateName?: string
+  roleTitle?: string
+  fileName?: string
   onScrollToOptimizer?: (keywords: string[]) => void
+  onSwitchToInterview?: () => void
 }
 
 export default function InterviewReadinessCard({
   analysis,
   report: _report,
-  onScrollToOptimizer
+  candidateName = 'Verified Candidate',
+  roleTitle = 'Software Engineer',
+  fileName = 'Resume.pdf',
+  onScrollToOptimizer,
+  onSwitchToInterview,
 }: InterviewReadinessCardProps) {
   const [showInterviewQuestions, setShowInterviewQuestions] = useState(false)
   const [completedChecklist, setCompletedChecklist] = useState<Record<string, boolean>>({})
+  const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false)
 
   // Compute Interview Shortlist Probability
   const kwScore = analysis.keywordMatchScore || 0
@@ -109,23 +120,46 @@ export default function InterviewReadinessCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-3 self-start md:self-center">
-          <div className="text-right">
-            <div className="font-mono text-2xl font-bold text-ink dark:text-moon">
-              {currentProbability}%
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 self-start md:self-center">
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="font-mono text-2xl font-bold text-ink dark:text-moon">
+                {currentProbability}%
+              </div>
+              <div className="text-[10px] text-ink-faint uppercase tracking-wider font-semibold">
+                Current Shortlist Chance
+              </div>
             </div>
-            <div className="text-[10px] text-ink-faint uppercase tracking-wider font-semibold">
-              Current Shortlist Chance
+            <div className="h-8 w-px bg-line dark:bg-night-line" />
+            <div className="text-right">
+              <div className="font-mono text-2xl font-bold text-emerald-500">
+                {potentialProbability}%
+              </div>
+              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-semibold">
+                After AI Fixes
+              </div>
             </div>
           </div>
-          <div className="h-8 w-px bg-line dark:bg-night-line" />
-          <div className="text-right">
-            <div className="font-mono text-2xl font-bold text-emerald-500">
-              {potentialProbability}%
-            </div>
-            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-semibold">
-              After AI Fixes
-            </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setIsBadgeModalOpen(true)}
+              className="btn-outline-glass text-xs py-1.5 px-3 flex items-center gap-1.5 text-g-blue border-g-blue/30 hover:bg-g-blue/10 transition-colors"
+              title="View and share your official ATS readiness badge"
+            >
+              <Award size={13} className="text-g-blue" />
+              <span>Verified Badge</span>
+            </button>
+            {onSwitchToInterview && (
+              <button
+                onClick={onSwitchToInterview}
+                className="btn-glow text-xs py-1.5 px-3 flex items-center gap-1.5"
+                title="Practice these questions live in the interactive voice simulator"
+              >
+                <Mic size={13} />
+                <span>Practice Live</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -298,6 +332,23 @@ export default function InterviewReadinessCard({
               exit={{ height: 0, opacity: 0 }}
               className="p-4 pt-0 border-t border-line dark:border-night-line space-y-3"
             >
+              {onSwitchToInterview && (
+                <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={16} className="text-purple-500 shrink-0" />
+                    <span className="text-xs text-ink dark:text-moon">
+                      Practice answering these exact questions in our <strong>Voice &amp; STAR AI Mock Simulator</strong>.
+                    </span>
+                  </div>
+                  <button
+                    onClick={onSwitchToInterview}
+                    className="btn-glow text-xs py-1.5 px-3 flex items-center gap-1.5 shrink-0 bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <Mic size={12} /> Launch Voice Simulator
+                  </button>
+                </div>
+              )}
+
               {interviewQuestions.map((q, idx) => (
                 <div key={idx} className="p-3.5 rounded-xl border border-line dark:border-night-line bg-white/50 dark:bg-night-panel/50 space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
@@ -318,6 +369,18 @@ export default function InterviewReadinessCard({
           )}
         </AnimatePresence>
       </div>
+
+      {/* Official ATS Readiness Credential Modal */}
+      <AtsReadinessBadgeModal
+        isOpen={isBadgeModalOpen}
+        onClose={() => setIsBadgeModalOpen(false)}
+        candidateName={candidateName}
+        roleTitle={roleTitle}
+        atsScore={atsScore}
+        keywordScore={kwScore}
+        probabilityLabel={status.label}
+        fileName={fileName}
+      />
     </div>
   )
 }
