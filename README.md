@@ -17,7 +17,7 @@
 
   <br />
 
-  [🌐 **Explore Live Application**](https://getresumeiq.onrender.com) • [✨ **Features**](#-key-features) • [🏗️ **Architecture**](#-architecture) • [🚀 **Getting Started**](#-getting-started) • [👨‍💻 **Author**](#-lead-architect)
+  [🌐 **Explore Live Application**](https://getresumeiq.onrender.com) • [✨ **Features**](#-key-features) • [🏗️ **Architecture**](#-architecture) • [🚀 **Getting Started**](#-getting-started) • [👨‍💻 **Lead Architect**](#-lead-architect)
 
 </div>
 
@@ -27,53 +27,66 @@
 
 Over **75% of resumes** are filtered out by automated Applicant Tracking Systems (ATS) before a human recruiter ever sees them. Generic resume checkers only count buzzwords.
 
-**ResumeIQ** is an enterprise-grade AI career copilot that audits resumes through the lens of modern ATS parsers (Workday, Greenhouse, Lever, Taleo) and simulates executive recruiters. Powered by **Google Gemini 2.5 Flash** and a serverless **Neon PostgreSQL** backend, ResumeIQ provides mathematical precision, deep semantic matching, and instant actionable bullet rewrites.
+**ResumeIQ** is an enterprise-grade AI career copilot that audits resumes through the lens of modern ATS parsers (Workday, Greenhouse, Lever, Taleo) and simulates executive recruiters. Powered by **Google Gemini 2.5 Flash** and a serverless **Neon PostgreSQL** cloud backend, ResumeIQ provides mathematical precision, deep semantic matching, single-column parsing diagnostics, and instant actionable bullet rewrites.
 
 ---
 
 ## ✨ Key Features
 
-### 1. ⚡ Dual-Score ATS Engine
+### 1. ⚡ Dual-Score ATS Engine & Knockout Radar
 - **ATS Compatibility Score (0–100%)**: Detects parsing errors, missing sections, complex tables, unreadable headers, and contact details.
-- **Job Description Keyword Match (0–100%)**: Semantic NLP analysis comparing resume skills against the target job requirements.
-- **Categorized Breakdown**: Granular scoring across *Impact*, *Keywords*, *Readability*, and *Formatting*.
+- **Job Description Keyword Match (0–100%)**: Semantic NLP analysis comparing resume skills against target job postings.
+- **Knockout Radar**: Pinpoints high-risk criteria triggering immediate ATS automated disqualification with color-coded risk alerts (`CLEARED`, `CAUTION`, `HIGH RISK`).
 
-### 2. 🎯 Knockout Radar
-- Pinpoints high-risk criteria that trigger immediate ATS automated rejection (e.g., missing required degrees, certification gaps, residency mismatches).
-- Color-coded risk status (`CLEARED`, `CAUTION`, `HIGH RISK`) with detailed mitigation steps.
+### 2. ✍️ AI Bullet Optimizer & Smart Keyword Injector (Google X-Y-Z Certified)
+- **Real-Time Passive Verb & Metric Analyzer**: Instantly flags passive starters (*"worked on"*, *"responsible for"*) and missing numerical impact.
+- **Google X-Y-Z Certified STAR Rewriter**: Generates 3 executive variants (*Accomplished [X] measured by [Y] by doing [Z]*):
+  - 📈 **Metric & Impact Focused**: Amplifies numbers, scale, throughput, and business ROI.
+  - ⚙️ **Technical Depth & Architecture**: Maximizes relevant tech-stack keyword density and system rigor.
+  - 👥 **Leadership & Ownership**: Highlights cross-functional leadership, velocity, and delivery.
+- **⚡ Smart Keyword Injector**: Select your missing ATS skills (e.g. *Docker, Kubernetes, AWS*) to synthesize authentic, production-grade experience bullets weaving them in naturally without keyword stuffing.
 
-### 3. ✍️ AI Bullet Optimizer
-- Rewrites resume bullet points using proven executive frameworks (Google XYZ formula: *Accomplished [X], as measured by [Y], by doing [Z]*).
-- Generates 3 tailored variants for each bullet:
-  - 📈 **Metric-Focused**: Amplifies numbers, scale, and revenue impact.
-  - 🛠️ **Technical Depth**: Maximizes relevant tech-stack keyword density.
-  - 👑 **Leadership & Ownership**: Highlights cross-functional leadership and initiative.
+### 3. 🔍 ATS "X-Ray" Robot Parser Simulator ("What the Machine Sees")
+- **Robot Plain-Text Terminal View**: Direct terminal emulation showing the exact unadorned plain text ingested by Workday, Taleo, and Greenhouse.
+- **Candidate Contact Entity Verification**: Verifies whether candidate Name, Email, Phone, and LinkedIn/GitHub profiles were successfully extracted or lost in headers/graphics.
+- **7-Point Parsed Section Matrix**: Checks standard section boundaries (*Contact, Summary, Experience, Skills, Education, Projects, Certifications*).
+- **Layout & Flattening Risk Diagnostics**: Identifies multi-column text scrambling, table flattening, and non-standard font glyphs.
+- **1-Click Text Copy & `.txt` Export**: Export clean parsed text for external tool testing.
 
-### 4. 🎭 Multi-Persona Hiring Simulator
-- Evaluates resumes through 3 realistic recruiter viewpoints:
-  - **The 6-Second HR Screener**: First-impression scan for titles and keywords.
-  - **The Technical Lead**: In-depth architecture, code quality, and engineering rigor.
-  - **The Hiring Manager**: Business impact, scalability, and cultural fit.
+### 4. 📝 1-Click Tailored Cover Letter & InMail Outreach Suite
+- **1-Click Formatted Business Letter Print / Save as PDF**: Instant browser print engine integration generating formatted executive business letters.
+- **Dedicated `.txt` Cover Letter Exporter**: Download pure tailored cover letter text in 1 click.
+- **Live Recruiter Readability & Word Count Meter**: Dynamic badge monitoring optimal 250–350 word 1-page length.
+- **1-Tap Company Quick-Pill Presets**: Fast pre-fills for industry leaders (*Google, Microsoft, Amazon, Meta, Stripe, Netflix, YC Startup*).
+- **Multi-Persona Cold Outreach**:
+  - Direct Engineering Manager / Lead Pitch
+  - Warm Alumni & Peer Referral Request
+  - Corporate Technical Recruiter InMail
+  - Post-Application Day 5 Follow-Up
+  - LinkedIn Connection Note (<300 character live limit counter)
 
-### 5. 🎙️ AI Mock Interview Simulator
-- Generates custom behavioral and technical interview questions based directly on the candidate's resume vulnerabilities.
-- Evaluates user responses in real-time, providing constructive coaching and model answers.
+### 5. 🎯 AI Interview Question Predictor & Verified Readiness Credential
+- **Targeted Screening Predictor**: Predicts top 4 interview questions based on candidate's exact resume skill gaps with STAR Coaching Tips.
+- **Voice & STAR Mock Simulator Integration**: 1-click launch into the interactive voice/audio simulator with speech recognition and AI evaluation.
+- **Official ATS Readiness Credential Modal**:
+  - Dynamic Verification ID (e.g. `RIQ-89241`) with SHA-256 hash security.
+  - **1-Click LinkedIn Announcement Post Draft**: Pre-formatted viral post highlighting verified scores.
+  - **GitHub README Markdown Badge**: Embed verified ATS badges into your GitHub profile.
+  - **HTML Portfolio Badge**: Embeddable responsive badges for developer portfolios.
+  - **Printable Landscape Official Certificate**: Print or save high-resolution A4 landscape credentials.
 
-### 6. 💼 Application Kit Generator
-- One-click tailored **Cover Letter**, **LinkedIn Connection Pitch**, **Hiring Manager InMail**, and **Alumni Referral Note** matched to any target company.
-
-### 7. 📈 Version Comparison & Score Progression
-- Track multiple revisions of your resume.
-- Interactive version timeline highlighting score progression and keyword diffs between drafts.
+### 6. 📈 Version Lineage Diff & Progression Tracking
+- Track multiple revisions of your resume with parent-root version lineage.
+- Interactive side-by-side version progression charts, score deltas, and keyword resolution tracking between drafts.
 
 ---
 
-## 🎨 Design System
+## 🎨 Design System & Responsiveness
 
 - **Obsidian Dark & Clean Light Modes**: Automatic system preference detection with zero flash of unstyled content (`localStorage` pre-paint script).
-- **Google 4-Color Prismatic Glow**: Subtle accents inspired by Google’s primary spectrum (`#4285F4`, `#EA4335`, `#FBBC05`, `#34A853`).
-- **Glassmorphic Depth**: Frosted backdrop filters, micro-interactions powered by `Framer Motion`, and accessible contrast ratios.
-- **100% Fluid Responsive**: Pixel-perfect layout from ultra-compact smartphones (320px) to 4K desktop displays.
+- **Google 4-Color Prismatic Glow**: Subtle accents inspired by Google’s signature primary spectrum (`#4285F4`, `#EA4335`, `#FBBC05`, `#34A853`).
+- **Glassmorphic Depth**: Frosted backdrop filters, fluid micro-interactions powered by `Framer Motion`, and accessible contrast ratios.
+- **100% Fluid Responsive**: Pixel-perfect layout with 44px+ touch targets from compact mobile smartphones (320px) to 4K desktop displays.
 
 ---
 
@@ -85,9 +98,18 @@ ResumeIQ is organized as an enterprise-grade monorepo:
 ResumeIQ/
 ├── frontend/                     # React 18 + Vite + TypeScript + Tailwind CSS
 │   ├── src/
-│   │   ├── components/           # Modular UI widgets (KnockoutRadar, BulletOptimizer, etc.)
+│   │   ├── components/
+│   │   │   ├── AtsXRayModal.tsx           # Machine vision terminal & entity extractor
+│   │   │   ├── AtsReadinessBadgeModal.tsx # Verified credential, badges & LinkedIn share
+│   │   │   ├── BulletOptimizer.tsx        # STAR rewriter & smart keyword injector
+│   │   │   ├── ApplicationKit.tsx         # Cover letter PDF generator & InMail suite
+│   │   │   ├── MockInterviewSimulator.tsx # Voice recognition & STAR interview coach
+│   │   │   ├── InterviewReadinessCard.tsx # Recruiter probability & predicted questions
+│   │   │   ├── VersionCompare.tsx         # Version diffing & score progression
+│   │   │   ├── KnockoutRadar.tsx          # Automated ATS disqualifier screen
+│   │   │   └── Dashboard.tsx              # Executive workspace hub
 │   │   ├── context/              # Auth & Theme context providers
-│   │   ├── services/             # Dynamic API client (relative endpoints for zero-CORS)
+│   │   ├── services/             # Type-safe API client (relative endpoints, zero-CORS)
 │   │   └── App.tsx               # Root routing and application state
 │   ├── public/                   # PWA icons, Google rainbow brand assets
 │   └── vite.config.ts            # Vite bundler configuration + Dev Proxy
@@ -95,11 +117,11 @@ ResumeIQ/
 ├── backend/                      # Node.js + Express 4 REST API
 │   ├── src/
 │   │   ├── config/               # Database pool, env schema (Zod), Winston logger
-│   │   ├── controllers/          # Request handlers with async error wrappers
+│   │   ├── controllers/          # Request handlers (resumes, analyses, optimizer, etc.)
 │   │   ├── db/migrations/        # Idempotent PostgreSQL DDL migrations
-│   │   ├── middleware/           # Rate limiting, AES auth guards, Multer upload
+│   │   ├── middleware/           # Rate limiting, AES auth guards, Multer memory storage
 │   │   ├── repositories/         # Parameterized SQL query layers
-│   │   ├── services/             # Gemini 2.5 LLM, PDF parser, Keyword matcher
+│   │   ├── services/             # Gemini 2.5 LLM, PDF parser, Keyword matcher, Bullet optimizer
 │   │   └── server.js             # Production entry point serving static bundle
 │
 ├── render.yaml                   # Automated Render Blueprint specification
@@ -110,7 +132,8 @@ ResumeIQ/
 
 ## 🔐 Security & Privacy
 
-- **Field-Level Encryption at Rest**: Sensitive user data is encrypted with **AES-256-GCM** using `crypto`.
+- **Field-Level Encryption at Rest**: Sensitive resume text is encrypted with **AES-256-GCM** using Node.js `crypto`.
+- **Cloud-Native Database Persistence**: Avatars and candidate records store Base64/buffer payloads directly in PostgreSQL (Neon), surviving PaaS container restarts.
 - **Stateless Authentication**: Signed **JWT (JSON Web Tokens)** with secure HTTP-only cookie support.
 - **Password Security**: Strong hashing with **Bcrypt** (12 salt rounds).
 - **Hardened Edge**: Rate limiting via `express-rate-limit`, secure HTTP response headers with `helmet`, and dynamic origin CORS reflection.
