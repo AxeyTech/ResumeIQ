@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, LogOut, Menu, X, LogIn } from 'lucide-react'
+import { ArrowRight, LayoutDashboard, LogOut, Menu, X, LogIn } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 
@@ -78,9 +78,11 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
             <div className="flex items-center gap-2 sm:gap-2.5">
               <button
                 onClick={onGoToDashboard}
-                className="btn-glow text-xs py-2 px-3.5 sm:px-4 flex items-center justify-center font-medium"
+                className="btn-glow text-xs py-2 px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 font-medium shrink-0 shadow-sm"
+                title="Open your ResumeIQ Workspace & Dashboard"
               >
-                Dashboard
+                <LayoutDashboard size={14} className="shrink-0 text-white" />
+                <span>Dashboard</span>
               </button>
               <button
                 onClick={logout}
@@ -144,7 +146,19 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
               ))}
             </div>
 
-            {!user && (
+            {user ? (
+              <div className="pt-1 flex flex-col gap-2.5">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    onGoToDashboard()
+                  }}
+                  className="w-full btn-glow text-xs py-2.5 justify-center flex items-center gap-2 font-medium"
+                >
+                  <LayoutDashboard size={14} /> Open Dashboard
+                </button>
+              </div>
+            ) : (
               <div className="pt-1 flex flex-col gap-2.5">
                 <button
                   onClick={() => {
