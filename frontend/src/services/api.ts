@@ -119,6 +119,23 @@ export interface BulletOptimizationResult {
   generatedBy?: string;
 }
 
+export interface InjectedBulletItem {
+  category: string;
+  bullet: string;
+  actionVerb: string;
+  embeddedKeywords: string[];
+  impactMetric: string;
+  whyItWorks: string;
+}
+
+export interface InjectedKeywordsResult {
+  keywords: string[];
+  jobTitle: string;
+  injectedBullets: InjectedBulletItem[];
+  atsScoreBoostEstimate: string;
+  generatedBy?: string;
+}
+
 export interface VersionTimelineEntry {
   resumeId: string;
   versionNumber: number;
@@ -411,6 +428,19 @@ export const api = {
       body: JSON.stringify({ bullet, targetKeywords, jobTitle, tone }),
     });
     return handleResponse<BulletOptimizationResult>(res);
+  },
+
+  async injectKeywords(
+    keywords: string[],
+    jobTitle = 'Software Engineer',
+    context = ''
+  ): Promise<InjectedKeywordsResult> {
+    const res = await fetch(`${API_BASE}/api/v1/optimizer/inject-keywords`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ keywords, jobTitle, context }),
+    });
+    return handleResponse<InjectedKeywordsResult>(res);
   },
 
   async compareVersions(resumeId: string): Promise<VersionCompareResponse> {

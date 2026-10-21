@@ -52,6 +52,15 @@ export const optimizeBulletSchema = z.object({
   tone: z.enum(['impactful', 'technical', 'executive']).optional().default('impactful'),
 });
 
+export const injectKeywordsSchema = z.object({
+  keywords: z
+    .array(z.string().trim().min(1).max(100))
+    .min(1, 'Please provide at least 1 keyword')
+    .max(10, 'Maximum 10 keywords at a time'),
+  jobTitle: z.string().trim().max(100).optional().default('Software Engineer'),
+  context: z.string().trim().max(500).optional().default(''),
+});
+
 export const generateKitSchema = z.object({
   resumeId: z.string().uuid('Valid resumeId is required'),
   jobDescriptionText: z.string().trim().max(25_000).optional().default(''),

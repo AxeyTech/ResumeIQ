@@ -30,7 +30,8 @@ import {
   GitCompare,
   Wand2,
   Play,
-  LucideIcon
+  LucideIcon,
+  Zap
 } from 'lucide-react'
 import ScoreRing from './ScoreRing'
 import BulletOptimizer from './BulletOptimizer'
@@ -888,9 +889,20 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
 
                           {/* Missing Keywords */}
                           <div>
-                            <h5 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3 flex items-center gap-1.5">
-                              <AlertTriangle size={14} /> Missing Keywords ({analysisResult.missingKeywords.length})
-                            </h5>
+                            <div className="flex items-center justify-between gap-2 mb-3">
+                              <h5 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                                <AlertTriangle size={14} /> Missing Keywords ({analysisResult.missingKeywords.length})
+                              </h5>
+                              <button
+                                onClick={() => setActiveSuiteTab('tools')}
+                                className="btn-outline-glass text-xs py-1 px-2.5 flex items-center gap-1.5 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/10 transition-colors"
+                                title="Open AI Injector with these missing keywords"
+                              >
+                                <Zap size={12} className="text-amber-500" />
+                                <span className="font-medium">1-Click AI Injector</span>
+                                <ArrowRight size={11} />
+                              </button>
+                            </div>
                             <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto pr-1">
                               {analysisResult.missingKeywords.map((k) => (
                                 <button
@@ -1111,7 +1123,11 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                     }}
                   />
 
-                  <BulletOptimizer suggestedKeywords={analysisResult?.missingKeywords || []} />
+                  <BulletOptimizer
+                    suggestedKeywords={analysisResult?.missingKeywords || []}
+                    jobTitle={selectedResume.displayName?.replace(/\.[^/.]+$/, '') || 'Software Engineer'}
+                    resumeSections={selectedResume.sections}
+                  />
                 </motion.div>
               )}
             </>

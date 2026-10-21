@@ -7,3 +7,4 @@ export const optimizerRouter = Router();
 optimizerRouter.use(requireAuth);
 
 optimizerRouter.post('/bullet', optimizerController.optimizeBullet);
+optimizerRouter.post('/inject-keywords', optimizerController.injectKeywords);

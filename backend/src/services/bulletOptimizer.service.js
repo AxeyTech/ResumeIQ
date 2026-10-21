@@ -157,4 +157,125 @@ Respond with ONLY valid JSON matching this exact structure:
     logger.debug('Using heuristic fallback for bullet optimization');
     return generateAlgorithmicFallback(bullet, kwList, jobTitle);
   },
+
+  /**
+   * Generates tailored resume bullet points embedding specific target/missing keywords.
+   *
+   * @param {{ keywords: string[], jobTitle?: string, context?: string }} params
+   */
+  async injectKeywords({ keywords = [], jobTitle = 'Software Engineer', context = '' }) {
+    const kwList = Array.isArray(keywords)
+      ? keywords.filter((k) => typeof k === 'string' && k.trim()).map((k) => k.trim())
+      : [];
+    if (kwList.length === 0) {
+      kwList.push('Full-Stack Engineering', 'Performance Optimization');
+    }
+
+    const prompt = `
+You are an elite Applicant Tracking System (ATS) engineer and technical executive resume writer.
+Generate 3 distinct, production-grade resume bullet points for a "${jobTitle}" that NATURALLY and AUTHENTICALLY incorporate the following target/missing keywords:
+KEYWORDS: ${kwList.join(', ')}
+${context ? `ADDITIONAL CONTEXT: ${context}` : ''}
+
+CRITICAL ATS & QUALITY RULES:
+1. Every bullet MUST start with a strong past-tense executive action verb (e.g. Architected, Engineered, Orchestrated, Automated, Spearheaded, Overhauled).
+2. Follow the Google X-Y-Z formula: "Accomplished [X] as measured by [Y] by doing [Z]".
+3. Include realistic quantifiable metrics (percentages, throughput, latency, time savings, or scale).
+4. Integrate the requested keywords naturally in context without awkward keyword-stuffing.
+5. Provide 3 diverse categories:
+   - Category 1: Technical Depth & Architecture
+   - Category 2: Performance, Scale & Metrics
+   - Category 3: Automation & Reliability
+
+Respond with ONLY valid JSON matching this exact structure:
+{
+  "keywords": ${JSON.stringify(kwList)},
+  "jobTitle": "${jobTitle.replace(/"/g, '\\"')}",
+  "injectedBullets": [
+    {
+      "category": "Technical Depth & Architecture",
+      "bullet": "<complete bullet string>",
+      "actionVerb": "<first action verb>",
+      "embeddedKeywords": ["<keyword from list>"],
+      "impactMetric": "<short phrase summarizing the metric/impact>",
+      "whyItWorks": "<1 sentence explanation for why ATS and recruiters favor this>"
+    },
+    {
+      "category": "Performance, Scale & Metrics",
+      "bullet": "<complete bullet string>",
+      "actionVerb": "<first action verb>",
+      "embeddedKeywords": ["<keyword from list>"],
+      "impactMetric": "<short phrase summarizing the metric/impact>",
+      "whyItWorks": "<1 sentence explanation>"
+    },
+    {
+      "category": "Automation & Reliability",
+      "bullet": "<complete bullet string>",
+      "actionVerb": "<first action verb>",
+      "embeddedKeywords": ["<keyword from list>"],
+      "impactMetric": "<short phrase summarizing the metric/impact>",
+      "whyItWorks": "<1 sentence explanation>"
+    }
+  ],
+  "atsScoreBoostEstimate": "+20% Keyword Coverage Boost"
+}
+`;
+
+    if (geminiClient.isConfigured()) {
+      try {
+        const result = await geminiClient.generateJson(prompt, { temperature: 0.3 });
+        if (result && Array.isArray(result.injectedBullets) && result.injectedBullets.length >= 3) {
+          return {
+            ...result,
+            generatedBy: 'gemini',
+          };
+        }
+      } catch (err) {
+        logger.warn('Gemini keyword injection failed; switching to heuristic fallback', { error: err.message });
+      }
+    }
+
+    logger.debug('Using heuristic fallback for keyword injection');
+    return generateKeywordInjectionFallback(kwList, jobTitle);
+  },
 };
+
+function generateKeywordInjectionFallback(keywords = [], jobTitle = 'Software Engineer') {
+  const kwList = Array.isArray(keywords) && keywords.length > 0 ? keywords : ['Cloud Architecture', 'CI/CD Pipelines'];
+  const p1 = kwList[0] || 'Modern Technologies';
+  const p2 = kwList[1] || 'Scalable Services';
+  const rest = kwList.slice(0, 3).join(', ');
+
+  return {
+    keywords: kwList,
+    jobTitle,
+    injectedBullets: [
+      {
+        category: 'Architecture & System Design',
+        bullet: `Architected and scaled production-grade infrastructure integrating ${p1}, boosting overall system throughput by 35% and slashing latency across core services.`,
+        actionVerb: 'Architected',
+        embeddedKeywords: [p1],
+        impactMetric: '35% throughput increase',
+        whyItWorks: 'Directly validates system design seniority and quantifiable production efficiency.',
+      },
+      {
+        category: 'Engineering & Scalability',
+        bullet: `Engineered high-concurrency microservices leveraging ${rest}, ensuring 99.9% fault tolerance and reducing turnaround deployment cycles by 30%.`,
+        actionVerb: 'Engineered',
+        embeddedKeywords: kwList.slice(0, 2),
+        impactMetric: '99.9% fault tolerance',
+        whyItWorks: 'Demonstrates deep hands-on expertise with required job stack skills.',
+      },
+      {
+        category: 'Delivery & Reliability',
+        bullet: `Spearheaded migration and automated testing for ${p2}, collaborating across engineering teams to deliver robust deliverables 2 weeks ahead of schedule.`,
+        actionVerb: 'Spearheaded',
+        embeddedKeywords: [p2],
+        impactMetric: 'Delivered 2 weeks ahead of target',
+        whyItWorks: 'Exemplifies cross-functional ownership and rapid business delivery value.',
+      },
+    ],
+    atsScoreBoostEstimate: '+20% Keyword Coverage Boost',
+    generatedBy: 'heuristic_engine',
+  };
+}
