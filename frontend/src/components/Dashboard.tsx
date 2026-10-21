@@ -729,52 +729,70 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                       transition={{ duration: 0.3 }}
                       className="space-y-6"
                     >
-                      {/* Cross-Suite Quick Action Bar */}
-                      <div className="glass rounded-2xl p-4 sm:p-5 border border-line dark:border-night-line bg-gradient-to-r from-g-blue/5 via-canvas-deep/30 dark:via-night-panel/30 to-purple-500/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-card">
+                      {/* Cross-Suite Quick Action Hub */}
+                      <div className="glass rounded-3xl p-5 sm:p-6 border border-line dark:border-night-line bg-gradient-to-br from-g-blue/5 via-canvas-deep/40 dark:via-night-panel/40 to-purple-500/5 shadow-card space-y-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-g-blue/10 text-g-blue flex items-center justify-center shrink-0">
+                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-g-blue via-g-green to-g-yellow flex items-center justify-center text-white shadow-glow-blue shrink-0">
                             <Sparkles size={18} />
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-ink dark:text-moon">
-                              Next Steps: Optimize &amp; Apply
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-display font-semibold text-sm sm:text-base text-ink dark:text-moon leading-tight">
+                                Recommended Next Actions
+                              </h4>
+                              <span className="font-mono text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-g-blue/10 text-g-blue border border-g-blue/20">
+                                Action Hub
+                              </span>
                             </div>
-                            <div className="text-[11px] text-ink-soft dark:text-moon-soft">
-                              Inject {analysisResult.missingKeywords.length} missing keywords in Resume Studio or generate tailored cover letter in Application Kit.
-                            </div>
+                            <p className="text-xs text-ink-soft dark:text-moon-soft mt-0.5">
+                              {analysisResult.missingKeywords.length > 0
+                                ? `Address ${analysisResult.missingKeywords.length} missing skill gaps, inspect raw ATS text, or generate tailored application assets:`
+                                : 'Take action on your audit results across your ResumeIQ career suite:'}
+                            </p>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full md:w-auto shrink-0">
+
+                        {/* Responsive 5-Button Suite Action Strip */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5 pt-1">
                           <button
                             onClick={() => setActiveSuiteTab('builder')}
-                            className="btn-glow text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 flex-1 md:flex-initial"
+                            className="btn-glow text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium"
                           >
-                            <FileEdit size={13} /> Open Studio
+                            <FileEdit size={14} />
+                            <span>Resume Studio</span>
                           </button>
+
                           <button
                             onClick={() => setActiveSuiteTab('appkit')}
-                            className="btn-outline-glass text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 flex-1 md:flex-initial"
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-g-blue/50 text-ink dark:text-moon"
                           >
-                            <Send size={13} /> Application Kit
+                            <Send size={14} className="text-emerald-500" />
+                            <span>Application Kit</span>
                           </button>
+
                           <button
                             onClick={() => setActiveSuiteTab('radar')}
-                            className="btn-outline-glass text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 flex-1 md:flex-initial"
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-red-500/50 text-ink dark:text-moon"
                           >
-                            <ShieldAlert size={13} className="text-red-500" /> Knockout Radar
+                            <ShieldAlert size={14} className="text-red-500" />
+                            <span>Knockout Radar</span>
                           </button>
+
                           <button
                             onClick={() => setIsXRayOpen(true)}
-                            className="btn-outline-glass text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 flex-1 md:flex-initial text-ink dark:text-moon"
-                            title="Inspect raw text seen by corporate ATS parsers"
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-g-blue/50 text-ink dark:text-moon"
+                            title="Inspect raw machine text seen by corporate ATS parsers"
                           >
-                            <Scan size={13} className="text-g-blue" /> ATS X-Ray
+                            <Scan size={14} className="text-g-blue" />
+                            <span>ATS X-Ray</span>
                           </button>
+
                           <button
                             onClick={() => setActiveSuiteTab('interview')}
-                            className="btn-outline-glass text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 flex-1 md:flex-initial"
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-purple-500/50 text-ink dark:text-moon col-span-2 sm:col-span-1"
                           >
-                            <Mic size={13} /> Mock Interview
+                            <Mic size={14} className="text-purple-500" />
+                            <span>Mock Interview</span>
                           </button>
                         </div>
                       </div>
