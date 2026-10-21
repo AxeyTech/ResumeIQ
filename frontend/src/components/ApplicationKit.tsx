@@ -17,7 +17,8 @@ import {
   UserCheck,
   Clock,
   Compass,
-  Tag
+  Tag,
+  Printer
 } from 'lucide-react'
 import { api, ApplicationKitResult } from '../services/api'
 
@@ -88,6 +89,73 @@ export default function ApplicationKit({
     navigator.clipboard.writeText(text)
     setCopiedSection(sectionName)
     setTimeout(() => setCopiedSection(null), 2000)
+  }
+
+  const downloadCoverLetterTxt = () => {
+    if (!editableCoverLetter) return
+    const blob = new Blob([editableCoverLetter], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `CoverLetter_${(companyName || 'Company').replace(/[^a-z0-9]/gi, '_')}.txt`
+    document.body.appendChild(a)
+    a.click()
+    URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+  }
+
+  const printCoverLetterPdf = () => {
+    if (!editableCoverLetter) return
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    })
+
+    const safeContent = editableCoverLetter
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+
+    const html = `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Cover Letter — ${companyName || 'Application'}</title>
+    <style>
+      @page { margin: 1in; size: letter; }
+      body {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        line-height: 1.65;
+        color: #111827;
+        margin: 0;
+        padding: 40px;
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .date { margin-bottom: 24px; color: #4B5563; font-size: 14px; }
+      .content { font-size: 15px; white-space: pre-wrap; line-height: 1.7; }
+      @media print {
+        body { padding: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="date">${dateStr}</div>
+    <div class="content">${safeContent}</div>
+    <script>
+      window.onload = function() {
+        setTimeout(function() { window.print(); }, 250);
+      };
+    </script>
+  </body>
+</html>`
+
+    printWindow.document.write(html)
+    printWindow.document.close()
   }
 
   const downloadFullKit = () => {
@@ -201,6 +269,19 @@ ${result.subjectLines.map((s, i) => `${i + 1}. ${s}`).join('\n')}
               placeholder="e.g. Google, Microsoft, Stripe"
               className="w-full rounded-xl border border-line dark:border-night-line bg-white dark:bg-night-panel/40 px-3.5 py-2.5 text-xs font-ui text-ink dark:text-moon placeholder:text-ink-faint dark:placeholder:text-moon-soft/50 focus:outline-none focus:border-g-blue transition-colors shadow-sm"
             />
+            <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+              <span className="text-[10px] text-ink-faint dark:text-moon-soft">Quick fill:</span>
+              {['Google', 'Microsoft', 'Amazon', 'Meta', 'Stripe', 'Netflix', 'Fast-Growing Startup'].map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCompanyName(c)}
+                  className="text-[10px] px-2 py-0.5 rounded-lg bg-canvas-deep/40 dark:bg-night-panel/40 border border-line dark:border-night-line text-ink-soft dark:text-moon-soft hover:text-g-blue hover:border-g-blue/40 transition-colors"
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Target Job Title */}
@@ -341,28 +422,70 @@ ${result.subjectLines.map((s, i) => `${i + 1}. ${s}`).join('\n')}
           {/* TAB 1: Cover Letter */}
           {activeTab === 'coverLetter' && (
             <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between text-xs text-ink-soft dark:text-moon-soft">
-                <span>Personalized for {result.companyName} &bull; Editable below:</span>
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-ink-soft dark:text-moon-soft">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span>
+                    Personalized for <strong>{result.companyName}</strong>
+                  </span>
+                  {(() => {
+                    const words = editableCoverLetter.trim().split(/\s+/).filter(Boolean).length
+                    const isOptimal = words >= 200 && words <= 420
+                    return (
+                      <span
+                        className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          isOptimal
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                        }`}
+                      >
+                        {words} words &bull; ~{Math.max(1, Math.round(words / 200))} min read &bull;{' '}
+                        {isOptimal ? 'Optimal 1-Page Length' : 'Trim to fit 1 page'}
+                      </span>
+                    )
+                  })()}
+                </div>
+
+                <div className="flex items-center gap-1.5 flex-wrap self-start sm:self-auto">
                   <button
                     onClick={() => copyText(editableCoverLetter, 'coverLetter')}
-                    className="btn-glow text-xs py-1.5 px-3.5 flex items-center gap-1"
+                    className="btn-glow text-xs py-1.5 px-3 flex items-center gap-1.5"
+                    title="Copy to clipboard"
                   >
                     {copiedSection === 'coverLetter' ? (
                       <>
-                        <Check size={12} /> Copied!
+                        <Check size={12} className="text-emerald-500" />
+                        <span>Copied!</span>
                       </>
                     ) : (
                       <>
-                        <Copy size={12} /> Copy Cover Letter
+                        <Copy size={12} />
+                        <span>Copy Letter</span>
                       </>
                     )}
+                  </button>
+
+                  <button
+                    onClick={downloadCoverLetterTxt}
+                    className="btn-outline-glass text-xs py-1.5 px-2.5 flex items-center gap-1"
+                    title="Download plain text file"
+                  >
+                    <Download size={12} />
+                    <span>.txt</span>
+                  </button>
+
+                  <button
+                    onClick={printCoverLetterPdf}
+                    className="btn-outline-glass text-xs py-1.5 px-2.5 flex items-center gap-1 text-g-blue border-g-blue/30 hover:bg-g-blue/10 transition-colors"
+                    title="Print or Save as Formatted Business Letter PDF"
+                  >
+                    <Printer size={12} />
+                    <span>Print / PDF</span>
                   </button>
                 </div>
               </div>
 
               <textarea
-                rows={11}
+                rows={12}
                 value={editableCoverLetter}
                 onChange={(e) => setEditableCoverLetter(e.target.value)}
                 className="w-full rounded-2xl border border-line dark:border-night-line bg-white dark:bg-night-panel/60 p-4 text-xs font-ui text-ink dark:text-moon focus:outline-none focus:border-g-blue leading-relaxed resize-y shadow-sm font-sans"
