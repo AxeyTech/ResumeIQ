@@ -31,7 +31,8 @@ import {
   Wand2,
   Play,
   LucideIcon,
-  Zap
+  Zap,
+  Scan
 } from 'lucide-react'
 import ScoreRing from './ScoreRing'
 import BulletOptimizer from './BulletOptimizer'
@@ -43,6 +44,7 @@ import KnockoutRadar from './KnockoutRadar'
 import ResumeBuilder from './ResumeBuilder'
 import MockInterviewSimulator from './MockInterviewSimulator'
 import CareerChatbot from './CareerChatbot'
+import AtsXRayModal from './AtsXRayModal'
 import ResuAvatar from './ResuAvatar'
 import { useAuth } from '../context/AuthContext'
 import { api, ResumeItem, AnalysisResult, AuditReport } from '../services/api'
@@ -121,6 +123,9 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
 
   // AI Copilot Chatbot State (Step 5)
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
+
+  // ATS X-Ray Robot Simulator Modal State (Feature 2)
+  const [isXRayOpen, setIsXRayOpen] = useState(false)
 
   // Profile Settings Modal State
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -569,7 +574,16 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                     </h3>
                   </div>
 
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                    <button
+                      onClick={() => setIsXRayOpen(true)}
+                      className="btn-outline-glass text-xs py-2 px-3 sm:px-3.5 flex items-center gap-1.5 transition-all text-ink dark:text-moon hover:border-g-blue/60"
+                      title="Inspect what ATS robots extract from this resume"
+                    >
+                      <Scan size={13} className="text-g-blue" />
+                      <span>ATS X-Ray View</span>
+                    </button>
+
                     <button
                       onClick={() => {
                         const input = document.createElement('input')
@@ -581,7 +595,7 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                         }
                         input.click()
                       }}
-                      className="btn-outline-glass text-xs py-2 px-3.5 flex items-center gap-1.5"
+                      className="btn-outline-glass text-xs py-2 px-3 sm:px-3.5 flex items-center gap-1.5"
                       title="Upload a new revision inheriting this resume's lineage"
                     >
                       <Layers size={13} /> Upload Revision (v{selectedResume.versionNumber + 1})
@@ -748,6 +762,13 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                             className="btn-outline-glass text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 flex-1 md:flex-initial"
                           >
                             <ShieldAlert size={13} className="text-red-500" /> Knockout Radar
+                          </button>
+                          <button
+                            onClick={() => setIsXRayOpen(true)}
+                            className="btn-outline-glass text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 flex-1 md:flex-initial text-ink dark:text-moon"
+                            title="Inspect raw text seen by corporate ATS parsers"
+                          >
+                            <Scan size={13} className="text-g-blue" /> ATS X-Ray
                           </button>
                           <button
                             onClick={() => setActiveSuiteTab('interview')}
@@ -1376,6 +1397,16 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
             </form>
           </motion.div>
         </div>
+      )}
+
+      {/* 🔍 ATS Machine X-Ray Simulator Modal (Feature 2) */}
+      {selectedResume && (
+        <AtsXRayModal
+          resumeId={selectedResume.id}
+          displayName={selectedResume.displayName || selectedResume.fileName}
+          isOpen={isXRayOpen}
+          onClose={() => setIsXRayOpen(false)}
+        />
       )}
 
       {/* 🤖 ResumeIQ AI Career & Interview Copilot (Step 5) */}

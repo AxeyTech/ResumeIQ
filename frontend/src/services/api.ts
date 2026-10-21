@@ -136,6 +136,42 @@ export interface InjectedKeywordsResult {
   generatedBy?: string;
 }
 
+export interface AtsXRaySection {
+  key: string;
+  title: string;
+  description: string;
+  detected: boolean;
+  charCount: number;
+  preview: string | null;
+}
+
+export interface AtsXRayResponse {
+  resumeId: string;
+  fileName: string;
+  displayName: string;
+  fileType: string;
+  fileSizeBytes: number;
+  status: string;
+  parsabilityScore: number;
+  stats: {
+    wordCount: number;
+    lineCount: number;
+    charCount: number;
+    detectedSectionsCount: number;
+    totalSectionsCount: number;
+  };
+  extractedEntities: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    linkedin: string | null;
+    github: string | null;
+  };
+  sectionBreakdown: AtsXRaySection[];
+  formattingFlags: Array<{ code: string; severity: string; message: string }>;
+  rawText: string;
+}
+
 export interface VersionTimelineEntry {
   resumeId: string;
   versionNumber: number;
@@ -441,6 +477,13 @@ export const api = {
       body: JSON.stringify({ keywords, jobTitle, context }),
     });
     return handleResponse<InjectedKeywordsResult>(res);
+  },
+
+  async getResumeXRay(resumeId: string): Promise<AtsXRayResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/resumes/${resumeId}/xray`, {
+      headers: getHeaders(),
+    });
+    return handleResponse<AtsXRayResponse>(res);
   },
 
   async compareVersions(resumeId: string): Promise<VersionCompareResponse> {

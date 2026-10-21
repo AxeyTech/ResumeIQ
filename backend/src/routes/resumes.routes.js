@@ -22,6 +22,7 @@ resumesRouter.delete('/:id', resumesController.remove);
 resumesRouter.get('/:id/versions', resumesController.versions);
 resumesRouter.get('/:id/versions/compare', analysesController.compareVersions);
 resumesRouter.get('/:id/latest-analysis', analysesController.getLatestForResume);
+resumesRouter.get('/:id/xray', resumesController.getXRay);
 
 // SF-2 — FR-2.1
 resumesRouter.post('/:id/job-description', resumesController.attachJobDescription);

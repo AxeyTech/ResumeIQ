@@ -149,6 +149,118 @@ export const resumesController = {
   }),
 
   /**
+   * GET /api/v1/resumes/:id/xray
+   * ATS X-Ray Robot Parser Simulator: Returns decrypted raw extracted text,
+   * detected entities (candidate name, email, phone, links), parsed section boundaries,
+   * structural health diagnostics, and an overall ATS parsability index.
+   */
+  getXRay: asyncHandler(async (req, res) => {
+    const resume = await resumeRepository.findByIdForUser(req.params.id, req.user.id);
+    if (!resume) throw ApiError.notFound('Resume not found.');
+
+    let rawText = '';
+    if (resume.raw_text_encrypted) {
+      try {
+        rawText = decryptText(resume.raw_text_encrypted) || '';
+      } catch (err) {
+        logger.warn('Failed to decrypt resume text for X-Ray', { error: err.message, resumeId: resume.id });
+      }
+    }
+
+    // Entity extraction (Regex-based, safe and fast)
+    const emailMatch = rawText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    const phoneMatch = rawText.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+    const linkedinMatch = rawText.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+/i);
+    const githubMatch = rawText.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_-]+/i);
+
+    // Extract probable candidate name from top lines (skipping URLs, emails, phone numbers)
+    let candidateName = null;
+    const lines = rawText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    for (const line of lines.slice(0, 5)) {
+      if (
+        !line.includes('@') &&
+        !line.toLowerCase().includes('http') &&
+        !line.toLowerCase().includes('linkedin') &&
+        !line.toLowerCase().includes('github') &&
+        !/\d{5,}/.test(line) &&
+        line.length >= 3 &&
+        line.length <= 40
+      ) {
+        candidateName = line;
+        break;
+      }
+    }
+
+    // Section presence breakdown
+    const parsedSections = resume.parsed_sections || {};
+    const standardSections = [
+      { key: 'contact', title: 'Contact Information', description: 'Name, email, phone, location' },
+      { key: 'summary', title: 'Professional Summary', description: 'Executive brief or career objective' },
+      { key: 'experience', title: 'Work Experience', description: 'Roles, companies, dates, STAR bullet points' },
+      { key: 'skills', title: 'Technical Skills', description: 'Languages, frameworks, tools, competencies' },
+      { key: 'education', title: 'Education', description: 'Degree, university, graduation year' },
+      { key: 'projects', title: 'Projects', description: 'Technical projects, portfolio highlights' },
+      { key: 'certifications', title: 'Certifications', description: 'Licenses, credentials, courses' },
+    ];
+
+    const sectionBreakdown = standardSections.map((sec) => {
+      const content = parsedSections[sec.key] || '';
+      return {
+        key: sec.key,
+        title: sec.title,
+        description: sec.description,
+        detected: Boolean(content && content.trim().length > 0),
+        charCount: content.length,
+        preview: content ? content.trim().slice(0, 160) + (content.length > 160 ? '...' : '') : null,
+      };
+    });
+
+    // Formatting Flags & Risk Diagnostics
+    const formattingFlags = Array.isArray(resume.formatting_flags) ? resume.formatting_flags : [];
+
+    // Compute ATS Parsability Index (0-100)
+    let parsabilityScore = 100;
+    if (!emailMatch) parsabilityScore -= 20;
+    if (!phoneMatch) parsabilityScore -= 10;
+    if (!parsedSections.experience) parsabilityScore -= 25;
+    if (!parsedSections.skills) parsabilityScore -= 15;
+    if (!parsedSections.education) parsabilityScore -= 10;
+    if (formattingFlags.some((f) => f.code === 'SHORT_LINES_LAYOUT')) parsabilityScore -= 15;
+    if (formattingFlags.some((f) => f.code === 'UNUSUAL_ENCODING')) parsabilityScore -= 10;
+    parsabilityScore = Math.max(20, Math.min(100, parsabilityScore));
+
+    const wordCount = rawText.split(/\s+/).filter(Boolean).length;
+    const lineCount = lines.length;
+
+    res.status(200).json({
+      resumeId: resume.id,
+      fileName: resume.file_name,
+      displayName: resume.display_name,
+      fileType: resume.file_type,
+      fileSizeBytes: resume.file_size_bytes,
+      status: resume.status,
+      parsabilityScore,
+      stats: {
+        wordCount,
+        lineCount,
+        charCount: rawText.length,
+        detectedSectionsCount: sectionBreakdown.filter((s) => s.detected).length,
+        totalSectionsCount: sectionBreakdown.length,
+      },
+      extractedEntities: {
+        name: candidateName,
+        email: emailMatch ? emailMatch[0] : null,
+        phone: phoneMatch ? phoneMatch[0] : null,
+        linkedin: linkedinMatch ? linkedinMatch[0] : null,
+        github: githubMatch ? githubMatch[0] : null,
+      },
+      sectionBreakdown,
+      formattingFlags,
+      rawText,
+    });
+  }),
+
+  /**
    * POST /api/v1/resumes/:id/job-description
    * FR-2.1: attach/replace the target job description for a resume version.
    * BR-2: enforced at the DB layer via a unique index + upsert.
