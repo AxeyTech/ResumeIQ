@@ -142,6 +142,13 @@
   .mask-radial-fade {
     mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
   }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Disable the default cross-fade so our custom circular clip-path reveal

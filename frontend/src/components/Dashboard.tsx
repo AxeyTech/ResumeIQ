@@ -698,7 +698,7 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end sm:justify-start">
                         <button
                           onClick={() => setIsJdExpanded(true)}
                           className="btn-outline-glass text-xs py-1.5 px-3 flex items-center gap-1.5"
@@ -915,7 +915,7 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                         {/* Quick Export PDF */}
                         <button
                           onClick={handleDownloadPdf}
-                          className="btn-outline-glass text-xs py-1.5 px-3.5 flex items-center justify-center gap-1.5 text-ink dark:text-moon hover:border-g-blue/60 shrink-0 self-end sm:self-auto"
+                          className="btn-outline-glass text-xs py-2 sm:py-1.5 px-3.5 flex items-center justify-center gap-1.5 text-ink dark:text-moon hover:border-g-blue/60 shrink-0 w-full sm:w-auto"
                           title="Download official PDF audit report"
                         >
                           <Download size={13} className="text-g-blue" />
