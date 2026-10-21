@@ -4,6 +4,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        xs: '420px',
+      },
       colors: {
         // Light-mode surfaces (Stripe/Linear caliber high-contrast palette)
         canvas: '#F4F6FB',

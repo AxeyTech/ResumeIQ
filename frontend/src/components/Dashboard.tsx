@@ -425,19 +425,21 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
             className="btn-outline-glass flex items-center gap-1.5 text-xs py-2 px-3 sm:px-3.5"
             title="Edit profile & username"
           >
-            <Settings size={14} /> <span className="hidden xs:inline">Profile </span>Settings
+            <Settings size={14} className="shrink-0" /> <span>Settings</span>
           </button>
           <button
             onClick={onBackToHome}
             className="btn-outline-glass flex items-center gap-1.5 text-xs py-2 px-3 sm:px-3.5"
+            title="Back to Landing Website"
           >
-            <Home size={14} /> <span className="hidden xs:inline">Website</span>
+            <Home size={14} className="shrink-0" /> <span>Website</span>
           </button>
           <button
             onClick={logout}
-            className="flex items-center gap-1.5 text-xs py-2 px-3 sm:px-3.5 rounded-full border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-colors"
+            className="flex items-center gap-1.5 text-xs py-2 px-3 sm:px-3.5 rounded-full border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-colors shrink-0"
+            title="Sign out of your account"
           >
-            <LogOut size={14} /> <span className="hidden xs:inline">Logout</span>
+            <LogOut size={14} className="shrink-0 text-red-500" /> <span>Logout</span>
           </button>
         </div>
       </div>

@@ -86,10 +86,11 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
               </button>
               <button
                 onClick={logout}
-                className="btn-outline-glass text-xs py-2 px-2.5 sm:px-3 flex items-center gap-1.5"
-                title="Sign out"
+                className="btn-outline-glass text-xs py-2 px-2.5 sm:px-3 flex items-center gap-1.5 text-red-500 hover:text-red-600 hover:border-red-500/40 transition-colors shrink-0"
+                title="Sign out of your account"
               >
-                <LogOut size={13} />
+                <LogOut size={13} className="shrink-0 text-red-500" />
+                <span>Logout</span>
               </button>
             </div>
           ) : (
@@ -156,6 +157,15 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
                   className="w-full btn-glow text-xs py-2.5 justify-center flex items-center gap-2 font-medium"
                 >
                   <LayoutDashboard size={14} /> Open Dashboard
+                </button>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    logout()
+                  }}
+                  className="w-full btn-outline-glass text-xs py-2.5 justify-center flex items-center gap-2 text-red-500 hover:text-red-600 border-red-500/30 font-medium"
+                >
+                  <LogOut size={14} /> Logout
                 </button>
               </div>
             ) : (
