@@ -15,23 +15,23 @@ export default function AuroraBackground() {
     <div ref={ref} className="fixed inset-0 -z-10 overflow-hidden bg-canvas dark:bg-night transition-colors duration-500">
       <motion.div
         style={{ y: y1 }}
-        className="aurora-blob w-[42vw] h-[42vw] bg-g-blue top-[-8%] left-[-6%]"
+        className="aurora-blob w-[42vw] h-[42vw] bg-g-blue top-[-8%] left-[-6%] transform-gpu will-change-transform"
       />
       <motion.div
         style={{ y: y2 }}
-        className="aurora-blob w-[36vw] h-[36vw] bg-g-red top-[8%] right-[-8%]"
+        className="aurora-blob w-[36vw] h-[36vw] bg-g-red top-[8%] right-[-8%] transform-gpu will-change-transform"
       />
       <motion.div
         style={{ y: y3, rotate }}
-        className="aurora-blob w-[38vw] h-[38vw] bg-g-yellow bottom-[10%] left-[8%]"
+        className="aurora-blob w-[38vw] h-[38vw] bg-g-yellow bottom-[10%] left-[8%] transform-gpu will-change-transform"
       />
       <motion.div
         style={{ y: y4 }}
-        className="aurora-blob w-[34vw] h-[34vw] bg-g-green bottom-[-10%] right-[10%]"
+        className="aurora-blob w-[34vw] h-[34vw] bg-g-green bottom-[-10%] right-[10%] transform-gpu will-change-transform"
       />
 
       {/* soft veil so content stays legible over the aurora */}
-      <div className="absolute inset-0 bg-canvas/70 dark:bg-night/75 backdrop-blur-[100px]" />
+      <div className="absolute inset-0 bg-canvas/75 dark:bg-night/80 backdrop-blur-xl sm:backdrop-blur-[80px]" />
     </div>
   )
 }

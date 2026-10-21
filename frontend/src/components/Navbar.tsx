@@ -47,18 +47,18 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
           : 'bg-canvas/50 dark:bg-night/50 border-b border-line/40 dark:border-night-line/40'
       }`}
     >
-      <nav className="max-w-[1200px] mx-auto flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5">
+      <nav className="max-w-[1200px] mx-auto flex items-center justify-between px-3 sm:px-6 md:px-8 py-3 sm:py-5 overflow-hidden w-full gap-1.5 sm:gap-4">
         <a
           href="#top"
           onClick={() => setMobileMenuOpen(false)}
-          className="flex items-center gap-2.5 font-body font-bold text-xl tracking-tight text-ink dark:text-moon group"
+          className="flex items-center gap-1.5 sm:gap-2.5 font-body font-bold text-base sm:text-xl tracking-tight text-ink dark:text-moon group shrink-0"
         >
           <img
             src="/logo-icon.png?v=9"
             alt="ResumeIQ Logo"
-            className="w-8 h-8 rounded-full object-contain shadow-sm border border-line/60 dark:border-night-line group-hover:scale-105 transition-transform duration-300"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-contain shadow-sm border border-line/60 dark:border-night-line group-hover:scale-105 transition-transform duration-300 shrink-0"
           />
-          <span>Resume<span className="text-gradient">IQ</span></span>
+          <span className="whitespace-nowrap">Resume<span className="text-gradient">IQ</span></span>
         </a>
 
         {currentView === 'home' && (
@@ -71,40 +71,40 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
           </div>
         )}
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <ThemeToggle />
 
           {user ? (
-            <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 onClick={onGoToDashboard}
-                className="btn-glow text-xs py-2 px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 font-medium shrink-0 shadow-sm"
+                className="btn-glow text-[11px] sm:text-xs py-1.5 px-2.5 sm:py-2 sm:px-3.5 flex items-center gap-1 sm:gap-1.5 font-medium shrink-0 shadow-sm"
                 title="Open your ResumeIQ Workspace & Dashboard"
               >
-                <LayoutDashboard size={14} className="shrink-0 text-white" />
+                <LayoutDashboard size={13} className="shrink-0 text-white" />
                 <span>Dashboard</span>
               </button>
               <button
                 onClick={logout}
-                className="btn-outline-glass text-xs py-2 px-2.5 sm:px-3 flex items-center gap-1.5 text-red-500 hover:text-red-600 hover:border-red-500/40 transition-colors shrink-0"
+                className="btn-outline-glass text-[11px] sm:text-xs py-1.5 px-2 sm:py-2 sm:px-3 flex items-center gap-1 text-red-500 hover:text-red-600 hover:border-red-500/40 transition-colors shrink-0"
                 title="Sign out of your account"
               >
-                <LogOut size={13} className="shrink-0 text-red-500" />
+                <LogOut size={12} className="shrink-0 text-red-500" />
                 <span>Logout</span>
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => onOpenAuth('signin')}
-                className="hidden sm:inline-flex btn-outline-glass text-xs py-2.5 px-4 lg:px-5"
+                className="hidden sm:inline-flex btn-outline-glass text-xs py-2 px-3.5 lg:px-5"
               >
                 Sign In
               </button>
 
               <button
                 onClick={() => onOpenAuth('signup')}
-                className="btn-glow text-xs py-2 px-3.5 sm:py-2.5 sm:px-5 flex items-center gap-1.5"
+                className="btn-glow text-xs py-1.5 px-3 sm:py-2.5 sm:px-5 flex items-center gap-1.5"
               >
                 Begin <ArrowRight size={13} />
               </button>
@@ -115,10 +115,10 @@ export default function Navbar({ onOpenAuth, onGoToDashboard, currentView }: Nav
           {currentView === 'home' && (
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl glass border border-line dark:border-night-line text-ink dark:text-moon transition-colors hover:text-g-blue"
+              className="md:hidden p-1.5 sm:p-2 rounded-xl glass border border-line dark:border-night-line text-ink dark:text-moon transition-colors hover:text-g-blue shrink-0"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
           )}
         </div>

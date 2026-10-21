@@ -9,12 +9,14 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
     @apply bg-canvas text-ink font-body antialiased transition-colors duration-500;
     font-feature-settings: 'liga' 1, 'kern' 1;
     overflow-x: clip;
+    -webkit-overflow-scrolling: touch;
   }
 
   html.dark body {
@@ -126,7 +128,7 @@
   }
 
   .grain-overlay {
-    @apply pointer-events-none fixed inset-0 z-[2] bg-grain opacity-20 dark:opacity-[0.15];
+    @apply pointer-events-none fixed inset-0 z-[2] bg-grain opacity-20 dark:opacity-[0.15] hidden sm:block;
   }
 
   /* ---------- Aurora animated background ---------- */
@@ -134,7 +136,7 @@
     @apply pointer-events-none absolute inset-0 overflow-hidden;
   }
   .aurora-blob {
-    @apply absolute rounded-full blur-3xl opacity-40 dark:opacity-30 animate-aurora;
+    @apply absolute rounded-full blur-2xl sm:blur-3xl opacity-35 dark:opacity-30 transform-gpu will-change-transform sm:animate-aurora;
   }
 }
 

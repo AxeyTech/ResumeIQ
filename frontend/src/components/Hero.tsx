@@ -69,15 +69,15 @@ export default function Hero() {
           className="relative group flex justify-center items-center my-4"
         >
           {/* Layer 1: Expansive Shifting Google Rainbow Atmospheric Glow (Active Color Shift) */}
-          <div className="absolute -inset-10 sm:-inset-16 rounded-full bg-g-gradient bg-[length:300%_300%] animate-gradient-x blur-[80px] opacity-45 dark:opacity-90 pointer-events-none group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="absolute -inset-10 sm:-inset-16 rounded-full bg-g-gradient bg-[length:300%_300%] animate-gradient-x blur-2xl sm:blur-[80px] opacity-45 dark:opacity-90 pointer-events-none group-hover:opacity-100 transition-opacity duration-700 transform-gpu" />
 
           {/* Layer 2: Rotating Hypnotic Conic Rainbow Aura Beam */}
-          <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-[conic-gradient(from_0deg,#4285F4,#EA4335,#FBBC05,#34A853,#4285F4)] animate-spin-slow blur-2xl opacity-35 dark:opacity-75 pointer-events-none" />
+          <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-[conic-gradient(from_0deg,#4285F4,#EA4335,#FBBC05,#34A853,#4285F4)] sm:animate-spin-slow blur-xl sm:blur-2xl opacity-35 dark:opacity-75 pointer-events-none transform-gpu" />
 
           {/* Layer 3: Chromatic Rainbow Glowing Border Ring (Shifting 4-Color Edge) */}
           <div className="relative p-[2.5px] rounded-full bg-g-gradient bg-[length:250%_250%] animate-gradient-x shadow-xl dark:shadow-2xl">
             {/* Circular Glass Capsule Body - Adaptive Light (Porcelain Glass) & Dark (Obsidian Glass) */}
-            <div className="w-[260px] h-[260px] xs:w-[310px] xs:h-[310px] sm:w-[380px] sm:h-[380px] rounded-full bg-white/95 dark:bg-[#07090F]/95 backdrop-blur-3xl relative flex flex-col justify-center items-center overflow-hidden shadow-2xl">
+            <div className="w-[260px] h-[260px] xs:w-[310px] xs:h-[310px] sm:w-[380px] sm:h-[380px] rounded-full bg-white/95 dark:bg-[#07090F]/95 relative flex flex-col justify-center items-center overflow-hidden shadow-2xl">
               {/* Top Specular Crescent Rim Reflection */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/70 via-white/10 dark:from-white/25 dark:via-white/5 to-transparent pointer-events-none" />
 

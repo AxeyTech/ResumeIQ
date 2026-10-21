@@ -21,8 +21,8 @@ export default function ThemeToggle() {
       ref={btnRef}
       onClick={handleClick}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      className="relative inline-flex items-center gap-2 rounded-full glass px-3.5 py-2.5
-                 text-ink dark:text-moon overflow-hidden
+      className="relative inline-flex items-center justify-center sm:gap-2 rounded-full glass w-8 h-8 sm:w-auto p-0 sm:px-3 sm:py-2
+                 text-ink dark:text-moon overflow-hidden shrink-0
                  transition-all duration-300 hover:shadow-glow-blue hover:border-g-blue/40"
     >
       <span className="relative grid place-items-center w-4 h-4 shrink-0">
@@ -44,7 +44,7 @@ export default function ThemeToggle() {
         </AnimatePresence>
       </span>
 
-      <span className="relative h-4 overflow-hidden font-ui text-[12.5px] font-semibold w-9">
+      <span className="hidden sm:inline-block relative h-4 overflow-hidden font-ui text-[12.5px] font-semibold w-9">
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
             key={label}
