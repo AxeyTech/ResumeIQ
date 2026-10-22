@@ -108,6 +108,7 @@ ResumeIQ/
 │   │   ├── components/
 │   │   │   ├── AtsXRayModal.tsx           # Machine vision terminal & entity extractor
 │   │   │   ├── AtsReadinessBadgeModal.tsx # Verified credential, badges & LinkedIn share
+│   │   │   ├── InterviewDefenseCard.tsx   # Google XYZ auditor & reverse interview grilling matrix
 │   │   │   ├── BulletOptimizer.tsx        # STAR rewriter & smart keyword injector
 │   │   │   ├── ApplicationKit.tsx         # Cover letter PDF generator & InMail suite
 │   │   │   ├── MockInterviewSimulator.tsx # Voice recognition & STAR interview coach

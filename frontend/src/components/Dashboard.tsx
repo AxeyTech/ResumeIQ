@@ -35,7 +35,8 @@ import {
   Scan,
   Target,
   Building2,
-  ChevronUp
+  ChevronUp,
+  ShieldCheck
 } from 'lucide-react'
 import ScoreRing from './ScoreRing'
 import BulletOptimizer from './BulletOptimizer'
@@ -46,14 +47,15 @@ import CompanySimulator from './CompanySimulator'
 import KnockoutRadar from './KnockoutRadar'
 import ResumeBuilder from './ResumeBuilder'
 import MockInterviewSimulator from './MockInterviewSimulator'
+import InterviewDefenseCard from './InterviewDefenseCard'
 import CareerChatbot from './CareerChatbot'
 import AtsXRayModal from './AtsXRayModal'
 import ResuAvatar from './ResuAvatar'
 import { useAuth } from '../context/AuthContext'
 import { api, ResumeItem, AnalysisResult, AuditReport } from '../services/api'
 
-export type ActiveSuiteTab = 'audit' | 'radar' | 'builder' | 'appkit' | 'interview' | 'tools'
-export type AuditSubView = 'scorecard' | 'readiness' | 'simulator'
+export type ActiveSuiteTab = 'audit' | 'defense' | 'radar' | 'builder' | 'appkit' | 'interview' | 'tools'
+export type AuditSubView = 'scorecard' | 'readiness' | 'defense' | 'simulator'
 
 interface DashboardProps {
   onBackToHome: () => void
@@ -166,6 +168,13 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
       subtitle: 'Scorecard & Diagnostics',
       badge: analysisResult ? `${analysisResult.atsCompatibilityScore}% ATS` : 'Scorecard',
       icon: BarChart3,
+    },
+    {
+      id: 'defense',
+      label: 'Interview Defense',
+      subtitle: 'Google XYZ & Grilling',
+      badge: '1-of-1 Engine',
+      icon: ShieldCheck,
     },
     {
       id: 'radar',
@@ -829,14 +838,22 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                           </div>
                         </div>
 
-                        {/* Responsive 5-Button Suite Action Strip */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5 pt-1">
+                        {/* Responsive 6-Button Suite Action Strip */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5 pt-1">
                           <button
                             onClick={() => setActiveSuiteTab('builder')}
                             className="btn-glow text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium"
                           >
                             <FileEdit size={14} />
                             <span>Resume Studio</span>
+                          </button>
+
+                          <button
+                            onClick={() => setActiveSuiteTab('defense')}
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-g-red/50 text-ink dark:text-moon"
+                          >
+                            <ShieldCheck size={14} className="text-g-red" />
+                            <span>Interview Defense</span>
                           </button>
 
                           <button
@@ -866,7 +883,7 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
 
                           <button
                             onClick={() => setActiveSuiteTab('interview')}
-                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-purple-500/50 text-ink dark:text-moon col-span-2 sm:col-span-1"
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-purple-500/50 text-ink dark:text-moon"
                           >
                             <Mic size={14} className="text-purple-500" />
                             <span>Mock Interview</span>
@@ -887,6 +904,18 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                           >
                             <BarChart3 size={14} className={auditSubView === 'scorecard' ? 'text-g-blue' : ''} />
                             <span>ATS Diagnostics &amp; Gaps</span>
+                          </button>
+
+                          <button
+                            onClick={() => setAuditSubView('defense')}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 shrink-0 ${
+                              auditSubView === 'defense'
+                                ? 'bg-white dark:bg-night-surface text-ink dark:text-moon shadow-sm border border-g-red/30 ring-1 ring-g-red/20'
+                                : 'text-ink-soft hover:text-ink dark:text-moon-soft dark:hover:text-moon hover:bg-white/40 dark:hover:bg-night-surface/40'
+                            }`}
+                          >
+                            <ShieldCheck size={14} className={auditSubView === 'defense' ? 'text-g-red' : ''} />
+                            <span>Interview Defense &amp; XYZ</span>
                           </button>
 
                           <button
@@ -1136,6 +1165,20 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                         </div>
                       )}
 
+                      {/* Sub-View: 🛡️ Reverse Interview Defense & Google X-Y-Z Matrix */}
+                      {auditSubView === 'defense' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <InterviewDefenseCard
+                            resumeId={selectedResume.id}
+                            onSwitchToBuilder={() => setActiveSuiteTab('builder')}
+                          />
+                        </motion.div>
+                      )}
+
                       {/* Sub-View 2: Recruiter Readiness & STAR Forecast */}
                       {auditSubView === 'readiness' && (
                         <motion.div
@@ -1232,6 +1275,20 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                         setAnalysisResult(newAnalysis)
                       }
                     }}
+                  />
+                </motion.div>
+              )}
+
+              {/* Suite: 🛡️ Reverse Interview Defense & Google X-Y-Z Certified Matrix */}
+              {activeSuiteTab === 'defense' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <InterviewDefenseCard
+                    resumeId={selectedResume.id}
+                    onSwitchToBuilder={() => setActiveSuiteTab('builder')}
                   />
                 </motion.div>
               )}

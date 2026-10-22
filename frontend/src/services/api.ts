@@ -264,6 +264,59 @@ export interface SimulatedAtsQuestion {
   guidance: string;
 }
 
+export interface XyzEvaluation {
+  score: number;
+  actionVerb: string | null;
+  metric: string | null;
+  context: string | null;
+  hasAction: boolean;
+  hasMetric: boolean;
+  hasContext: boolean;
+  fluffWordsDetected: string[];
+  googleXyzRewrite: string;
+  rewriteExplanation: string;
+}
+
+export interface GrillingQuestion {
+  question: string;
+  interviewerRole: string;
+  focusArea: string;
+  keyPreparationPointers: string[];
+}
+
+export interface InterviewDefenseData {
+  riskLevel: 'HIGH' | 'MEDIUM' | 'LOW';
+  riskReason: string;
+  grillingQuestions: GrillingQuestion[];
+}
+
+export interface BulletDefenseItem {
+  id: string;
+  section: string;
+  roleOrProject: string;
+  originalBullet: string;
+  xyzEvaluation: XyzEvaluation;
+  interviewDefense: InterviewDefenseData;
+}
+
+export interface ResumeDefenseResponse {
+  id: string;
+  resumeId: string;
+  displayName: string;
+  overallDefensibilityScore: number;
+  xyzComplianceRate: number;
+  riskDistribution: {
+    high: number;
+    medium: number;
+    low: number;
+    totalBullets: number;
+  };
+  keyStrengths: string[];
+  topVulnerabilities: string[];
+  bullets: BulletDefenseItem[];
+  analyzedAt: string;
+}
+
 export interface KnockoutRadarResponse {
   analysisId: string;
   overallStatus: 'CLEARED' | 'CAUTION' | 'HIGH_RISK';
@@ -491,6 +544,21 @@ export const api = {
       headers: getHeaders(),
     });
     return handleResponse<VersionCompareResponse>(res);
+  },
+
+  async getResumeDefense(resumeId: string): Promise<ResumeDefenseResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/resumes/${resumeId}/defense`, {
+      headers: getHeaders(),
+    });
+    return handleResponse<ResumeDefenseResponse>(res);
+  },
+
+  async refreshResumeDefense(resumeId: string): Promise<ResumeDefenseResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/resumes/${resumeId}/defense/refresh`, {
+      method: 'POST',
+      headers: getHeaders(),
+    });
+    return handleResponse<ResumeDefenseResponse>(res);
   },
 
   async generateApplicationKit(data: {
