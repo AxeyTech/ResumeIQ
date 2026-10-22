@@ -317,6 +317,45 @@ export interface ResumeDefenseResponse {
   analyzedAt: string;
 }
 
+export interface AtsQuirkDetail {
+  name: string;
+  status: 'PASS' | 'WARNING' | 'FAIL';
+  severity: 'low' | 'medium' | 'high';
+  detail: string;
+}
+
+export interface AtsSystemDetail {
+  id: 'workday' | 'taleo' | 'greenhouse' | 'lever';
+  name: string;
+  vendor: string;
+  marketShare: string;
+  topEmployers: string[];
+  score: number;
+  status: 'PASSED' | 'CAUTION' | 'CRITICAL_FAIL';
+  primaryHazard: string;
+  quirks: AtsQuirkDetail[];
+  emulatedParserView: string;
+  actionableFix: string;
+}
+
+export interface MultiAtsSimulationResponse {
+  resumeId: string;
+  displayName: string;
+  overallMultiAtsScore: number;
+  safestAts: {
+    id: string;
+    name: string;
+    score: number;
+  };
+  mostVulnerableAts: {
+    id: string;
+    name: string;
+    score: number;
+    primaryHazard: string;
+  };
+  systems: AtsSystemDetail[];
+}
+
 export interface KnockoutRadarResponse {
   analysisId: string;
   overallStatus: 'CLEARED' | 'CAUTION' | 'HIGH_RISK';
@@ -559,6 +598,13 @@ export const api = {
       headers: getHeaders(),
     });
     return handleResponse<ResumeDefenseResponse>(res);
+  },
+
+  async getMultiAtsSimulation(resumeId: string): Promise<MultiAtsSimulationResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/resumes/${resumeId}/multi-ats-simulation`, {
+      headers: getHeaders(),
+    });
+    return handleResponse<MultiAtsSimulationResponse>(res);
   },
 
   async generateApplicationKit(data: {

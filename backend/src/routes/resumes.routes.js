@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { resumesController } from '../controllers/resumes.controller.js';
 import { analysesController } from '../controllers/analyses.controller.js';
 import { interviewDefenseController } from '../controllers/interviewDefense.controller.js';
+import { multiAtsSimulatorController } from '../controllers/multiAtsSimulator.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { uploadResume, verifyUploadedFile } from '../middleware/upload.js';
 import { withAnalysisQueue } from '../middleware/rateLimiter.js';
@@ -28,6 +29,9 @@ resumesRouter.get('/:id/xray', resumesController.getXRay);
 // Step 1: Reverse Interview Defense & Google XYZ Engine
 resumesRouter.get('/:id/defense', interviewDefenseController.getDefense);
 resumesRouter.post('/:id/defense/refresh', interviewDefenseController.refreshDefense);
+
+// Step 3: Adversarial Multi-ATS Simulator Engine (Workday, Taleo, Greenhouse, Lever)
+resumesRouter.get('/:id/multi-ats-simulation', multiAtsSimulatorController.getSimulation);
 
 // SF-2 — FR-2.1
 resumesRouter.post('/:id/job-description', resumesController.attachJobDescription);

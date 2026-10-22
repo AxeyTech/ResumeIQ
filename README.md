@@ -85,6 +85,12 @@ Over **75% of resumes** are filtered out by automated Applicant Tracking Systems
 - **Realistic Technical Grilling Questions**: Generates exact, uncompromising interview questions (scale bottlenecks, failure modes, network partitions, SLA guarantees) with tactical preparation cheat sheets.
 - **Google X-Y-Z Formula Compliance**: Analyzes *Accomplished [X] as measured by [Y], by doing [Z]*, identifies corporate fluff words, and delivers 1-click structured rewrites.
 
+### 8. 🏢 Adversarial Multi-ATS Simulator Engine (Workday, Taleo, Greenhouse, Lever - Step 3)
+- **Workday ATS Parser Emulation**: Audits table-flattening bugs, multi-column transposition hazards, and header/footer text stripping risks across Google, Amazon, Walmart, and Salesforce pipelines.
+- **Oracle Taleo Engine Emulation**: Detects non-standard date tokens that cause Taleo to calculate 0 months of tenure, along with strict stem keyword matching.
+- **Greenhouse & Lever Talent Acquisition**: Evaluates candidate scorecard density, recruiter fast-scan digests, social profile indexing (GitHub, LinkedIn), and auto-generated candidate tags.
+- **Comparative Multi-System Scorecard**: Side-by-side clearance rates identifying the Safest ATS Platform vs Most Vulnerable ATS Platform with emulated machine terminal output previews.
+
 ---
 
 ## 🎨 Design System & Responsiveness

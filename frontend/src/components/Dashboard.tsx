@@ -1205,7 +1205,10 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <CompanySimulator analysisId={analysisResult.id} />
+                          <CompanySimulator
+                            analysisId={analysisResult.id}
+                            resumeId={selectedResume.id}
+                          />
                         </motion.div>
                       )}
                     </motion.div>
