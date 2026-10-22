@@ -8,6 +8,7 @@ interface ResuAvatarProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   className?: string
   interactive?: boolean
+  showOrbit?: boolean
   onClick?: () => void
 }
 
@@ -16,228 +17,384 @@ export default function ResuAvatar({
   size = 'md',
   className = '',
   interactive = false,
+  showOrbit = true,
   onClick,
 }: ResuAvatarProps) {
   const [internalMood, setInternalMood] = useState<ResuMood>(mood)
   const [isWinking, setIsWinking] = useState(false)
+  const [eyeGlance, setEyeGlance] = useState<'center' | 'left' | 'right'>('center')
+  const [isHovered, setIsHovered] = useState(false)
 
   // Sync external mood changes
   useEffect(() => {
     setInternalMood(mood)
   }, [mood])
 
-  // Periodic random blinking when idle
+  // Natural random blinking & glance behavior when idle
   useEffect(() => {
     if (internalMood !== 'idle') return
 
+    // Blinking timer
     const blinkInterval = setInterval(() => {
-      // 30% chance to do a double blink
       setIsWinking(true)
       setTimeout(() => {
         setIsWinking(false)
-      }, 180)
-    }, 3800 + Math.random() * 2000)
+      }, 160)
+    }, 3400 + Math.random() * 2200)
 
-    return () => clearInterval(blinkInterval)
+    // Playful eye glancing timer
+    const glanceInterval = setInterval(() => {
+      const glances: ('center' | 'left' | 'right')[] = ['center', 'left', 'right', 'center']
+      const chosen = glances[Math.floor(Math.random() * glances.length)]
+      setEyeGlance(chosen)
+      setTimeout(() => setEyeGlance('center'), 1400)
+    }, 5500 + Math.random() * 3000)
+
+    return () => {
+      clearInterval(blinkInterval)
+      clearInterval(glanceInterval)
+    }
   }, [internalMood])
 
-  // Size mapping
+  // Size mapping with pixel-perfect proportions
   const sizeConfig = {
-    xs: { box: 24, radius: 'rounded-lg', antennaH: 4, eyeW: 3, eyeH: 5 },
-    sm: { box: 32, radius: 'rounded-xl', antennaH: 5, eyeW: 4, eyeH: 7 },
-    md: { box: 42, radius: 'rounded-2xl', antennaH: 6, eyeW: 5, eyeH: 9 },
-    lg: { box: 56, radius: 'rounded-2xl', antennaH: 8, eyeW: 7, eyeH: 12 },
-    xl: { box: 72, radius: 'rounded-3xl', antennaH: 10, eyeW: 9, eyeH: 16 },
+    xs: {
+      box: 26,
+      radius: 'rounded-xl',
+      visorRadius: 'rounded-lg',
+      antennaH: 4,
+      eyeW: 3,
+      eyeH: 6,
+      orbitR: 18,
+    },
+    sm: {
+      box: 38,
+      radius: 'rounded-2xl',
+      visorRadius: 'rounded-xl',
+      antennaH: 5,
+      eyeW: 4.5,
+      eyeH: 8.5,
+      orbitR: 24,
+    },
+    md: {
+      box: 48,
+      radius: 'rounded-2xl',
+      visorRadius: 'rounded-xl',
+      antennaH: 6,
+      eyeW: 5.5,
+      eyeH: 10.5,
+      orbitR: 30,
+    },
+    lg: {
+      box: 64,
+      radius: 'rounded-3xl',
+      visorRadius: 'rounded-2xl',
+      antennaH: 8,
+      eyeW: 7.5,
+      eyeH: 14,
+      orbitR: 40,
+    },
+    xl: {
+      box: 84,
+      radius: 'rounded-[28px]',
+      visorRadius: 'rounded-2xl',
+      antennaH: 10,
+      eyeW: 10,
+      eyeH: 18,
+      orbitR: 52,
+    },
   }[size]
 
-  const currentMood = internalMood
+  const currentMood = isHovered && interactive ? 'happy' : internalMood
 
   // Click reaction for fun interactivity
   const handleClick = () => {
     if (interactive) {
       setInternalMood('happy')
-      setTimeout(() => setInternalMood(mood), 1800)
+      setTimeout(() => setInternalMood(mood), 2000)
     }
     if (onClick) onClick()
   }
 
+  // Calculate eye glance offset
+  const eyeOffset = eyeGlance === 'left' ? -2 : eyeGlance === 'right' ? 2 : 0
+
   return (
     <motion.div
       onClick={handleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={`relative inline-flex items-center justify-center shrink-0 select-none ${
-        interactive ? 'cursor-pointer' : ''
+        interactive ? 'cursor-pointer active:scale-95' : ''
       } ${className}`}
       style={{ width: sizeConfig.box, height: sizeConfig.box }}
       animate={
         currentMood === 'thinking'
           ? {
-              y: [0, -3, 0],
-              rotate: [-2, 2, -2],
+              y: [0, -3.5, 0],
+              rotate: [-2, 2.5, -2],
               transition: { repeat: Infinity, duration: 1.4, ease: 'easeInOut' },
             }
           : currentMood === 'happy'
           ? {
-              y: [0, -5, 0],
-              scale: [1, 1.08, 1],
+              y: [0, -6, 0],
+              scale: [1, 1.1, 1],
+              rotate: [0, -4, 4, 0],
               transition: { duration: 0.6, ease: 'easeOut' },
             }
           : currentMood === 'listening'
           ? {
-              scale: 1.05,
-              transition: { duration: 0.2 },
+              scale: 1.06,
+              y: -1.5,
+              transition: { duration: 0.25 },
             }
           : {
-              y: [0, -1.5, 0],
-              transition: { repeat: Infinity, duration: 3.2, ease: 'easeInOut' },
+              y: [0, -2.5, 0],
+              transition: { repeat: Infinity, duration: 3.4, ease: 'easeInOut' },
             }
       }
     >
-      {/* Outer Glow Halo (Deep Electric Cyan / Blue, No Rainbow!) */}
+      {/* 1. Dynamic Holographic Orbital Energy Ring (for sm and above) */}
+      {showOrbit && size !== 'xs' && (
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
+          className="absolute inset-[-6px] rounded-full pointer-events-none opacity-70"
+          style={{
+            background:
+              currentMood === 'happy'
+                ? 'conic-gradient(from 0deg, transparent 0deg, rgba(52, 211, 153, 0.6) 180deg, transparent 360deg)'
+                : currentMood === 'thinking'
+                ? 'conic-gradient(from 0deg, transparent 0deg, rgba(251, 191, 36, 0.6) 180deg, transparent 360deg)'
+                : 'conic-gradient(from 0deg, transparent 0deg, rgba(56, 189, 248, 0.5) 180deg, transparent 360deg)',
+            filter: 'blur(1.5px)',
+          }}
+        />
+      )}
+
+      {/* 2. Soft Ambient Aura Glow behind Resu */}
       <div
-        className={`absolute inset-0 ${sizeConfig.radius} transition-all duration-500 ${
+        className={`absolute inset-[-2px] ${sizeConfig.radius} transition-all duration-500 pointer-events-none ${
           currentMood === 'thinking'
-            ? 'bg-sky-500/30 blur-md scale-110 animate-pulse'
+            ? 'bg-amber-400/30 blur-md scale-115 animate-pulse'
             : currentMood === 'happy'
-            ? 'bg-emerald-400/35 blur-md scale-115'
+            ? 'bg-emerald-400/40 blur-lg scale-120'
             : currentMood === 'listening'
-            ? 'bg-blue-500/25 blur-sm scale-105'
-            : 'bg-blue-600/15 blur-xs'
+            ? 'bg-cyan-400/30 blur-md scale-110'
+            : 'bg-gradient-to-tr from-blue-600/25 via-cyan-500/20 to-purple-600/25 blur-sm'
         }`}
       />
 
-      {/* Robot Base Shell (Sleek Royal Indigo & Deep Tech Blue - Solid & Premium) */}
+      {/* 3. Main Aerodynamic Cyber-Chassis (Obsidian Titanium & Deep Sapphire) */}
       <div
-        className={`relative w-full h-full ${sizeConfig.radius} bg-gradient-to-br from-blue-600 via-indigo-600 to-slate-900 border border-blue-400/30 shadow-md flex items-center justify-center overflow-hidden`}
+        className={`relative w-full h-full ${sizeConfig.radius} bg-gradient-to-b from-[#1E293B] via-[#0F172A] to-[#090D16] border border-cyan-400/40 shadow-[0_4px_16px_rgba(14,165,233,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)] flex items-center justify-center overflow-hidden`}
       >
-        {/* Soft high-tech inner gloss */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/20 pointer-events-none" />
+        {/* Specular Curved Rim Highlight (Apple Vision style gloss) */}
+        <div className="absolute top-0 inset-x-0 h-[40%] bg-gradient-to-b from-white/35 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
 
-        {/* Cute Ear Modules on Left and Right */}
-        <motion.div
-          className="absolute -left-0.5 w-1 h-2 rounded-r-sm bg-blue-300/80"
-          animate={currentMood === 'thinking' ? { scaleY: [1, 1.4, 1] } : {}}
-          transition={{ repeat: Infinity, duration: 0.8 }}
-        />
-        <motion.div
-          className="absolute -right-0.5 w-1 h-2 rounded-l-sm bg-blue-300/80"
-          animate={currentMood === 'thinking' ? { scaleY: [1, 1.4, 1] } : {}}
-          transition={{ repeat: Infinity, duration: 0.8 }}
-        />
-
-        {/* Top Antenna Beacon (Little Glowing Ball) */}
-        <div className="absolute top-1 left-1/2 -translate-x-1/2 flex flex-col items-center">
+        {/* Cyber Acoustic Fins / Ear Modules (Left & Right) */}
+        <div className="absolute -left-0.5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5">
           <motion.div
-            className={`w-1.5 h-1.5 rounded-full ${
+            className="w-1 rounded-r-sm bg-gradient-to-r from-cyan-400 to-sky-300 shadow-[0_0_6px_#38BDF8]"
+            style={{ height: size === 'xs' ? 6 : size === 'sm' ? 9 : 12 }}
+            animate={
+              currentMood === 'listening'
+                ? { scaleY: [0.8, 1.4, 0.7, 1.2, 0.8] }
+                : currentMood === 'thinking'
+                ? { scaleY: [1, 1.3, 1] }
+                : { scaleY: 1 }
+            }
+            transition={{ repeat: Infinity, duration: currentMood === 'listening' ? 0.6 : 1.2 }}
+          />
+        </div>
+
+        <div className="absolute -right-0.5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5">
+          <motion.div
+            className="w-1 rounded-l-sm bg-gradient-to-l from-cyan-400 to-sky-300 shadow-[0_0_6px_#38BDF8]"
+            style={{ height: size === 'xs' ? 6 : size === 'sm' ? 9 : 12 }}
+            animate={
+              currentMood === 'listening'
+                ? { scaleY: [1.2, 0.7, 1.4, 0.8, 1.2] }
+                : currentMood === 'thinking'
+                ? { scaleY: [1, 1.3, 1] }
+                : { scaleY: 1 }
+            }
+            transition={{ repeat: Infinity, duration: currentMood === 'listening' ? 0.6 : 1.2 }}
+          />
+        </div>
+
+        {/* Top Photon Antenna Core with Crystalline Beacon */}
+        <div className="absolute top-0.5 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none">
+          <motion.div
+            className={`rounded-full shadow-lg transition-colors ${
               currentMood === 'thinking'
-                ? 'bg-amber-300 shadow-[0_0_8px_#FBBF24]'
+                ? 'bg-amber-300 shadow-[0_0_10px_#FBBF24]'
                 : currentMood === 'happy'
-                ? 'bg-emerald-300 shadow-[0_0_8px_#34D399]'
+                ? 'bg-emerald-300 shadow-[0_0_10px_#34D399]'
                 : currentMood === 'listening'
-                ? 'bg-sky-300 shadow-[0_0_6px_#38BDF8]'
-                : 'bg-sky-400 shadow-[0_0_4px_#38BDF8]'
+                ? 'bg-sky-300 shadow-[0_0_8px_#38BDF8]'
+                : 'bg-gradient-to-tr from-cyan-400 to-sky-200 shadow-[0_0_6px_#38BDF8]'
             }`}
+            style={{
+              width: size === 'xs' ? 3 : size === 'sm' ? 4.5 : size === 'md' ? 6 : 8,
+              height: size === 'xs' ? 3 : size === 'sm' ? 4.5 : size === 'md' ? 6 : 8,
+            }}
             animate={
               currentMood === 'thinking'
                 ? { scale: [1, 1.6, 1], opacity: [0.6, 1, 0.6] }
                 : currentMood === 'happy'
-                ? { scale: [1, 1.4, 1] }
-                : { opacity: [0.7, 1, 0.7] }
+                ? { scale: [1, 1.35, 1] }
+                : { opacity: [0.8, 1, 0.8], scale: [1, 1.08, 1] }
             }
             transition={{ repeat: Infinity, duration: currentMood === 'thinking' ? 0.45 : 2 }}
           />
-          <div className="w-0.5 h-1 bg-blue-300/60" />
+          <div
+            className="bg-slate-400/80 rounded-b-xs"
+            style={{
+              width: size === 'xs' ? 1 : 1.5,
+              height: size === 'xs' ? 2 : size === 'sm' ? 3 : 4,
+            }}
+          />
         </div>
 
-        {/* Dark OLED Visor Screen */}
-        <div className="w-[78%] h-[62%] rounded-xl bg-slate-950/90 border border-cyan-500/25 shadow-inner flex flex-col items-center justify-center p-1 relative mt-1.5">
-          {/* Subtle Visor Scanline Effect */}
-          <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent opacity-60 rounded-xl pointer-events-none" />
+        {/* 4. Deep Curved OLED Visor Screen (Tinted Astronaut Glass Faceplate) */}
+        <div
+          className={`w-[80%] h-[64%] ${sizeConfig.visorRadius} bg-gradient-to-b from-[#050B14] via-[#02050A] to-[#010307] border border-cyan-500/35 shadow-[inset_0_2px_8px_rgba(0,0,0,0.9),0_0_12px_rgba(34,211,238,0.2)] flex flex-col items-center justify-center relative mt-1 overflow-hidden`}
+        >
+          {/* Visor Specular Reflection Line */}
+          <div className="absolute top-0 inset-x-0 h-[45%] bg-gradient-to-b from-cyan-300/20 via-transparent to-transparent pointer-events-none" />
 
           {/* EYES CONTAINER */}
-          <div className="flex items-center justify-center gap-2 w-full">
-            {/* Thinking / Scanning Eyes */}
+          <div className="flex items-center justify-center gap-2 w-full relative z-10 px-1">
+            {/* Mode A: Thinking Scan Beam */}
             {currentMood === 'thinking' ? (
               <div className="flex items-center gap-1.5 py-0.5">
                 <motion.div
-                  className="w-2.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_6px_#22D3EE]"
-                  animate={{ scaleX: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
+                  className="rounded-full bg-gradient-to-r from-amber-400 to-yellow-200 shadow-[0_0_8px_#FBBF24]"
+                  style={{
+                    width: size === 'xs' ? 5 : size === 'sm' ? 8 : 11,
+                    height: size === 'xs' ? 3 : size === 'sm' ? 4 : 5.5,
+                  }}
+                  animate={{ scaleX: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
                   transition={{ repeat: Infinity, duration: 0.6, delay: 0 }}
                 />
                 <motion.div
-                  className="w-2.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_6px_#22D3EE]"
-                  animate={{ scaleX: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
+                  className="rounded-full bg-gradient-to-r from-amber-400 to-yellow-200 shadow-[0_0_8px_#FBBF24]"
+                  style={{
+                    width: size === 'xs' ? 5 : size === 'sm' ? 8 : 11,
+                    height: size === 'xs' ? 3 : size === 'sm' ? 4 : 5.5,
+                  }}
+                  animate={{ scaleX: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
                   transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
                 />
               </div>
             ) : currentMood === 'happy' ? (
-              /* Happy Smiling Eyes (^ ^) */
-              <div className="flex items-center gap-2">
-                <svg width="10" height="7" viewBox="0 0 10 7" fill="none" className="text-cyan-300 drop-shadow-[0_0_4px_#22D3EE]">
-                  <path d="M1 6C2.5 2 7.5 2 9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              /* Mode B: Adorable Curved Smiling Eyes (^ ^) */
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <svg
+                  width={size === 'xs' ? 8 : size === 'sm' ? 12 : 15}
+                  height={size === 'xs' ? 5 : size === 'sm' ? 8 : 10}
+                  viewBox="0 0 14 9"
+                  fill="none"
+                  className="text-cyan-300 drop-shadow-[0_0_6px_#22D3EE]"
+                >
+                  <path
+                    d="M1.5 7.5C3.5 2 10.5 2 12.5 7.5"
+                    stroke="currentColor"
+                    strokeWidth={size === 'xs' ? 2 : 2.5}
+                    strokeLinecap="round"
+                  />
                 </svg>
-                <svg width="10" height="7" viewBox="0 0 10 7" fill="none" className="text-cyan-300 drop-shadow-[0_0_4px_#22D3EE]">
-                  <path d="M1 6C2.5 2 7.5 2 9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <svg
+                  width={size === 'xs' ? 8 : size === 'sm' ? 12 : 15}
+                  height={size === 'xs' ? 5 : size === 'sm' ? 8 : 10}
+                  viewBox="0 0 14 9"
+                  fill="none"
+                  className="text-cyan-300 drop-shadow-[0_0_6px_#22D3EE]"
+                >
+                  <path
+                    d="M1.5 7.5C3.5 2 10.5 2 12.5 7.5"
+                    stroke="currentColor"
+                    strokeWidth={size === 'xs' ? 2 : 2.5}
+                    strokeLinecap="round"
+                  />
                 </svg>
               </div>
             ) : (
-              /* Normal / Idle / Listening Eyes with Blinking */
-              <div className="flex items-center gap-2">
+              /* Mode C: Luminous Expressive Digital Eyes with Pupil Gleam & Blinking */
+              <motion.div
+                className="flex items-center gap-1.5 sm:gap-2"
+                animate={{ x: eyeOffset }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
+                {/* Left Eye */}
                 <motion.div
-                  className="rounded-full bg-cyan-300 shadow-[0_0_7px_#22D3EE]"
+                  className="relative rounded-full bg-gradient-to-b from-cyan-200 via-cyan-400 to-sky-500 shadow-[0_0_8px_#22D3EE,0_0_16px_rgba(34,211,238,0.5)] flex items-center justify-center overflow-hidden"
                   style={{ width: sizeConfig.eyeW, height: sizeConfig.eyeH }}
                   animate={
                     isWinking
                       ? { scaleY: 0.1 }
                       : currentMood === 'listening'
-                      ? { scale: 1.15 }
+                      ? { scale: 1.2 }
                       : { scaleY: 1 }
                   }
                   transition={{ duration: 0.1 }}
-                />
+                >
+                  {/* Internal Pupil Gleam for Organic 3D Depth */}
+                  <span className="absolute top-0.5 right-0.5 w-[35%] h-[35%] rounded-full bg-white opacity-95 shadow-xs" />
+                </motion.div>
+
+                {/* Right Eye */}
                 <motion.div
-                  className="rounded-full bg-cyan-300 shadow-[0_0_7px_#22D3EE]"
+                  className="relative rounded-full bg-gradient-to-b from-cyan-200 via-cyan-400 to-sky-500 shadow-[0_0_8px_#22D3EE,0_0_16px_rgba(34,211,238,0.5)] flex items-center justify-center overflow-hidden"
                   style={{ width: sizeConfig.eyeW, height: sizeConfig.eyeH }}
                   animate={
                     isWinking
                       ? { scaleY: 0.1 }
                       : currentMood === 'listening'
-                      ? { scale: 1.15 }
+                      ? { scale: 1.2 }
                       : { scaleY: 1 }
                   }
                   transition={{ duration: 0.1 }}
-                />
-              </div>
+                >
+                  {/* Internal Pupil Gleam */}
+                  <span className="absolute top-0.5 right-0.5 w-[35%] h-[35%] rounded-full bg-white opacity-95 shadow-xs" />
+                </motion.div>
+              </motion.div>
             )}
           </div>
 
-          {/* Cute Soft Cheek Blush (appears when Happy or Idle) */}
+          {/* Neon Pink Cyber Cheek Blush */}
           <AnimatePresence>
-            {(currentMood === 'happy' || currentMood === 'idle') && (
+            {(currentMood === 'happy' || currentMood === 'idle') && size !== 'xs' && (
               <motion.div
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 0.7 }}
+                animate={{ opacity: currentMood === 'happy' ? 0.95 : 0.65 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center justify-between w-full px-1.5 mt-0.5"
+                className="flex items-center justify-between w-full px-2 mt-0.5 relative z-10"
               >
-                <span className="w-1 h-0.5 rounded-full bg-pink-400/80 shadow-[0_0_3px_#F472B6]" />
-                <span className="w-1 h-0.5 rounded-full bg-pink-400/80 shadow-[0_0_3px_#F472B6]" />
+                <span className="w-1.5 h-0.5 rounded-full bg-pink-400 shadow-[0_0_5px_#F472B6]" />
+                <span className="w-1.5 h-0.5 rounded-full bg-pink-400 shadow-[0_0_5px_#F472B6]" />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* Floating Sparkle when Happy */}
-      {currentMood === 'happy' && (
-        <motion.span
-          initial={{ opacity: 0, scale: 0, y: 0 }}
-          animate={{ opacity: 1, scale: 1.2, y: -10 }}
-          exit={{ opacity: 0 }}
-          className="absolute -top-1 -right-1 text-[11px] pointer-events-none select-none"
-        >
-          ✨
-        </motion.span>
-      )}
+      {/* Floating Sparkles when Happy or Clicked */}
+      <AnimatePresence>
+        {currentMood === 'happy' && (
+          <motion.span
+            initial={{ opacity: 0, scale: 0, y: 0 }}
+            animate={{ opacity: 1, scale: 1.2, y: -12 }}
+            exit={{ opacity: 0, scale: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute -top-2 -right-2 text-xs pointer-events-none select-none drop-shadow-[0_0_6px_#FDE047]"
+          >
+            ✨
+          </motion.span>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

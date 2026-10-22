@@ -85,6 +85,45 @@ export default function CareerChatbot({
   const [mood, setMood] = useState<ResuMood>('idle')
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null)
 
+  // Floating Resu proactive teaser pill
+  const [showTeaser, setShowTeaser] = useState(false)
+  const [teaserIndex, setTeaserIndex] = useState(0)
+
+  const teaserPrompts = [
+    '👋 Need help boosting your resume?',
+    '✨ Tap me! I am your AI career copilot',
+    currentAnalysis && currentAnalysis.missingKeywords.length > 0
+      ? `⚡ You have ${currentAnalysis.missingKeywords.length} missing keywords! Let's fix them.`
+      : '🎯 Want to test your interview answers?',
+    '💡 Ask me to review your ATS score!',
+  ]
+
+  useEffect(() => {
+    if (isChatOpen) {
+      setShowTeaser(false)
+      return
+    }
+
+    // First teaser pops up after 2.8 seconds
+    const initialTimer = setTimeout(() => {
+      setShowTeaser(true)
+      const hideTimer = setTimeout(() => setShowTeaser(false), 5200)
+      return () => clearTimeout(hideTimer)
+    }, 2800)
+
+    // Recurring teaser every 18 seconds
+    const interval = setInterval(() => {
+      setTeaserIndex((prev) => (prev + 1) % teaserPrompts.length)
+      setShowTeaser(true)
+      setTimeout(() => setShowTeaser(false), 5200)
+    }, 18000)
+
+    return () => {
+      clearTimeout(initialTimer)
+      clearInterval(interval)
+    }
+  }, [isChatOpen, teaserPrompts.length])
+
   // React when user types
   useEffect(() => {
     if (loading) return
@@ -399,30 +438,76 @@ export default function CareerChatbot({
 
   return (
     <>
+      {/* Dynamic Proactive Speech Teaser Bubble */}
+      <AnimatePresence>
+        {!isChatOpen && showTeaser && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.9 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            onClick={toggleChatOpen}
+            className="fixed bottom-[78px] sm:bottom-[86px] right-5 sm:right-6 z-[90] max-w-[270px] sm:max-w-[290px] p-3 rounded-2xl bg-white/95 dark:bg-slate-900/95 text-ink dark:text-moon shadow-[0_12px_36px_rgba(34,211,238,0.25),0_0_0_1px_rgba(56,189,248,0.4)] backdrop-blur-2xl cursor-pointer group flex items-start gap-2.5 transition-transform hover:scale-105 active:scale-95"
+          >
+            <span className="text-base shrink-0 mt-0.5 animate-bounce">💬</span>
+            <div className="flex-1 min-w-0 pr-2">
+              <div className="text-[11px] font-bold text-g-blue dark:text-cyan-400 flex items-center gap-1.5">
+                <span>Resu AI</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34D399]" />
+              </div>
+              <p className="text-xs text-ink dark:text-moon font-medium leading-snug mt-0.5">
+                {teaserPrompts[teaserIndex]}
+              </p>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowTeaser(false)
+              }}
+              className="text-ink-faint hover:text-ink dark:hover:text-moon p-0.5 rounded-md -mr-1 -mt-1 transition-colors"
+              title="Dismiss teaser"
+            >
+              <X size={13} />
+            </button>
+
+            {/* Speech Bubble Arrow Tail */}
+            <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white/95 dark:bg-slate-900/95 border-r border-b border-cyan-400/40 rotate-45" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating Trigger Button (Bottom-Right) */}
       {!isChatOpen && (
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={toggleChatOpen}
-          className="fixed bottom-6 right-6 z-[90] flex items-center gap-2.5 px-3.5 py-2.5 rounded-full bg-slate-900/95 dark:bg-night-surface/95 text-white shadow-2xl shadow-blue-500/25 border border-blue-500/30 backdrop-blur-xl group cursor-pointer transition-all hover:border-blue-400"
-          title="Chat with Resu — Your AI Career Companion"
-        >
-          <div className="relative">
-            <ResuAvatar mood={mood} size="sm" />
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900" />
-          </div>
-          <div className="text-left hidden sm:block pr-1">
-            <div className="font-display font-semibold text-xs leading-none flex items-center gap-1.5 text-white">
-              <span>Ask Resu</span> <Sparkles size={11} className="text-yellow-300" />
+        <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-[90] flex items-center">
+          {/* Ambient Pulsing Halo Ring Behind Resu */}
+          <div className="absolute inset-0 rounded-full bg-cyan-400/25 blur-md animate-ping pointer-events-none scale-125" />
+
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileHover={{ scale: 1.06, y: -2 }}
+            whileTap={{ scale: 0.94 }}
+            onClick={toggleChatOpen}
+            className="relative flex items-center gap-3 p-1.5 sm:py-2 sm:px-4 rounded-full bg-gradient-to-r from-slate-950/95 via-indigo-950/90 to-slate-950/95 text-white shadow-[0_8px_32px_rgba(34,211,238,0.35),0_0_0_1px_rgba(56,189,248,0.4)] backdrop-blur-2xl group cursor-pointer transition-all hover:shadow-[0_12px_40px_rgba(34,211,238,0.5),0_0_0_1px_rgba(56,189,248,0.7)]"
+            title="Chat with Resu — Your AI Career Companion"
+          >
+            <div className="relative shrink-0">
+              <ResuAvatar mood={mood} size="sm" interactive />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-950 shadow-[0_0_8px_#34D399] animate-pulse" />
             </div>
-            <div className="text-[10px] text-blue-200/80 font-mono mt-0.5">
-              {currentAnalysis ? `${currentAnalysis.atsCompatibilityScore}% ATS Context` : 'AI Career Companion'}
+
+            <div className="text-left hidden sm:block pr-1.5">
+              <div className="font-display font-bold text-xs leading-none flex items-center gap-1.5 text-white">
+                <span className="bg-gradient-to-r from-white via-cyan-200 to-sky-300 bg-clip-text text-transparent">Ask Resu</span>
+                <Sparkles size={12} className="text-amber-300 animate-spin" style={{ animationDuration: '4s' }} />
+              </div>
+              <div className="text-[10px] text-cyan-200/80 font-mono mt-1 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                <span>{currentAnalysis ? `${currentAnalysis.atsCompatibilityScore}% ATS Context` : 'AI Career Companion'}</span>
+              </div>
             </div>
-          </div>
-        </motion.button>
+          </motion.button>
+        </div>
       )}
 
       {/* Main Chatbot Floating Window */}
