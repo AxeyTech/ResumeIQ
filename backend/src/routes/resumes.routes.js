@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { resumesController } from '../controllers/resumes.controller.js';
 import { analysesController } from '../controllers/analyses.controller.js';
+import { interviewDefenseController } from '../controllers/interviewDefense.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { uploadResume, verifyUploadedFile } from '../middleware/upload.js';
 import { withAnalysisQueue } from '../middleware/rateLimiter.js';
@@ -23,6 +24,10 @@ resumesRouter.get('/:id/versions', resumesController.versions);
 resumesRouter.get('/:id/versions/compare', analysesController.compareVersions);
 resumesRouter.get('/:id/latest-analysis', analysesController.getLatestForResume);
 resumesRouter.get('/:id/xray', resumesController.getXRay);
+
+// Step 1: Reverse Interview Defense & Google XYZ Engine
+resumesRouter.get('/:id/defense', interviewDefenseController.getDefense);
+resumesRouter.post('/:id/defense/refresh', interviewDefenseController.refreshDefense);
 
 // SF-2 — FR-2.1
 resumesRouter.post('/:id/job-description', resumesController.attachJobDescription);

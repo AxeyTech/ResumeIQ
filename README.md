@@ -79,6 +79,12 @@ Over **75% of resumes** are filtered out by automated Applicant Tracking Systems
 - Track multiple revisions of your resume with parent-root version lineage.
 - Interactive side-by-side version progression charts, score deltas, and keyword resolution tracking between drafts.
 
+### 7. 🛡️ Reverse Interview Defense Matrix & Google X-Y-Z Engine (Step 1)
+- **Deep Bullet-Level Defensibility Audit**: Evaluates every work experience and project claim through the lens of Principal Staff Architects and Hiring Bar Raisers.
+- **Risk Distribution & Vulnerability Alerts**: Flags high-stakes architectural statements (*HIGH*, *MEDIUM*, *LOW* risk) that lack technical proof and risk severe interview failure.
+- **Realistic Technical Grilling Questions**: Generates exact, uncompromising interview questions (scale bottlenecks, failure modes, network partitions, SLA guarantees) with tactical preparation cheat sheets.
+- **Google X-Y-Z Formula Compliance**: Analyzes *Accomplished [X] as measured by [Y], by doing [Z]*, identifies corporate fluff words, and delivers 1-click structured rewrites.
+
 ---
 
 ## 🎨 Design System & Responsiveness
