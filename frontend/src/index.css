@@ -153,17 +153,33 @@
   }
 }
 
-/* Disable the default cross-fade so our custom circular clip-path reveal
-   (driven from ThemeContext) is the only visible transition effect. */
-::view-transition-old(root),
-::view-transition-new(root) {
+/* Hardware-accelerated 60/120fps circular theme clip reveal */
+::view-transition-old(root) {
   animation: none;
   mix-blend-mode: normal;
-}
-::view-transition-old(root) {
   z-index: 1;
 }
+
 ::view-transition-new(root) {
+  animation: theme-circular-reveal 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  mix-blend-mode: normal;
   z-index: 2;
+  will-change: clip-path;
+  transform: translateZ(0);
+}
+
+/* Suppress double-fading/stutter during circular clip reveal */
+::view-transition-old(root) *,
+::view-transition-new(root) * {
+  transition: none !important;
+}
+
+@keyframes theme-circular-reveal {
+  0% {
+    clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 0%));
+  }
+  100% {
+    clip-path: circle(var(--theme-r, 150vmax) at var(--theme-x, 50%) var(--theme-y, 0%));
+  }
 }
 

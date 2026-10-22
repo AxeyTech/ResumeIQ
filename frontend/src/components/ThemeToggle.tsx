@@ -26,13 +26,13 @@ export default function ThemeToggle() {
                  transition-all duration-300 hover:shadow-glow-blue hover:border-g-blue/40"
     >
       <span className="relative grid place-items-center w-4 h-4 shrink-0">
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence initial={false}>
           <motion.span
             key={theme}
-            initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+            initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
             animate={{ opacity: 1, rotate: 0, scale: 1 }}
-            exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="absolute inset-0 grid place-items-center"
           >
             {theme === 'dark' ? (
@@ -45,13 +45,13 @@ export default function ThemeToggle() {
       </span>
 
       <span className="hidden sm:inline-block relative h-4 overflow-hidden font-ui text-[12.5px] font-semibold w-9">
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence initial={false}>
           <motion.span
             key={label}
-            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+            initial={{ opacity: 0, y: 8, filter: 'blur(2px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="absolute left-0 top-0 whitespace-nowrap bg-gradient-to-r from-g-blue via-g-red to-g-yellow bg-clip-text text-transparent"
           >
             {label}
