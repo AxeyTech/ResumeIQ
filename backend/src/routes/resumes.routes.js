@@ -3,6 +3,7 @@ import { resumesController } from '../controllers/resumes.controller.js';
 import { analysesController } from '../controllers/analyses.controller.js';
 import { interviewDefenseController } from '../controllers/interviewDefense.controller.js';
 import { multiAtsSimulatorController } from '../controllers/multiAtsSimulator.controller.js';
+import { heatmapController } from '../controllers/heatmap.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { uploadResume, verifyUploadedFile } from '../middleware/upload.js';
 import { withAnalysisQueue } from '../middleware/rateLimiter.js';
@@ -32,6 +33,9 @@ resumesRouter.post('/:id/defense/refresh', interviewDefenseController.refreshDef
 
 // Step 3: Adversarial Multi-ATS Simulator Engine (Workday, Taleo, Greenhouse, Lever)
 resumesRouter.get('/:id/multi-ats-simulation', multiAtsSimulatorController.getSimulation);
+
+// Step 4: Recruiter 6-Second Attention Heatmap & Eye-Tracking Saliency
+resumesRouter.get('/:id/heatmap', heatmapController.getHeatmap);
 
 // SF-2 — FR-2.1
 resumesRouter.post('/:id/job-description', resumesController.attachJobDescription);

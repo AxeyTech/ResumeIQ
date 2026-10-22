@@ -356,6 +356,69 @@ export interface MultiAtsSimulationResponse {
   systems: AtsSystemDetail[];
 }
 
+export interface GazeFixationPoint {
+  order: number;
+  targetName: string;
+  durationSeconds: number;
+  xPercent: number;
+  yPercent: number;
+  attentionIntensity: 'high' | 'medium' | 'low';
+  recruiterThought: string;
+}
+
+export interface HeatmapZone {
+  id: string;
+  title: string;
+  section: string;
+  attentionLevel: 'MAXIMUM' | 'HIGH' | 'MODERATE' | 'BLIND_SPOT';
+  attentionPercentage: number;
+  timeSpentEstimate: string;
+  verdict: string;
+  contentSnippet: string;
+  isBlindSpot: boolean;
+  hasHiddenMetrics: boolean;
+  recommendation?: string;
+}
+
+export interface HeatmapSimulationResponse {
+  resumeId: string;
+  displayName: string;
+  saliencyScore: number;
+  estimatedScanTime: string;
+  aboveTheFoldDensityScore: number;
+  blindSpotRiskCount: number;
+  fPatternCompliance: number;
+  gazeSequence: GazeFixationPoint[];
+  zones: HeatmapZone[];
+  blindSpotAlerts: Array<{
+    title: string;
+    issue: string;
+    buriedMetric: string | null;
+    fixDirective: string;
+  }>;
+  rawFormattedContent: {
+    header: {
+      name: string;
+      title: string;
+      contacts: string[];
+    };
+    summary?: string;
+    experience: Array<{
+      role: string;
+      company: string;
+      dates: string;
+      bullets: string[];
+    }>;
+    education: Array<{
+      degree: string;
+      school: string;
+      year: string;
+    }>;
+    skills: string[];
+  };
+}
+
+
 export interface KnockoutRadarResponse {
   analysisId: string;
   overallStatus: 'CLEARED' | 'CAUTION' | 'HIGH_RISK';
@@ -605,6 +668,13 @@ export const api = {
       headers: getHeaders(),
     });
     return handleResponse<MultiAtsSimulationResponse>(res);
+  },
+
+  async getHeatmapSimulation(resumeId: string): Promise<HeatmapSimulationResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/resumes/${resumeId}/heatmap`, {
+      headers: getHeaders(),
+    });
+    return handleResponse<HeatmapSimulationResponse>(res);
   },
 
   async generateApplicationKit(data: {
