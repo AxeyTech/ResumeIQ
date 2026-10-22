@@ -418,6 +418,38 @@ export interface HeatmapSimulationResponse {
   };
 }
 
+export interface VerifiedSkillItem {
+  skill: string;
+  verificationTier: 'CRYPTOGRAPHICALLY_VERIFIED' | 'RESUME_DOCUMENTED';
+  evidenceSnippet: string;
+  badgeLevel: string;
+}
+
+export interface ArchitectureSignalItem {
+  signal: string;
+  status: 'VERIFIED' | 'NOT_DETECTED' | 'SINGLE_TIER' | 'CONFIRMED_VIA_IMPORTS';
+  proof: string;
+  confidence: number;
+}
+
+export interface ProofOfWorkResponse {
+  id: string;
+  resumeId: string;
+  displayName: string;
+  repoUrl: string;
+  repoName: string;
+  verificationCode: string;
+  overallPowScore: number;
+  verificationLevel: 'GOLD_STANDARD' | 'SILVER_STANDARD' | 'BRONZE_STANDARD';
+  verifiedSkills: VerifiedSkillItem[];
+  architectureSignals: ArchitectureSignalItem[];
+  languageBreakdown?: Array<{ language: string; bytes: number; percentage: number }>;
+  embedMarkdown?: string;
+  embedHtml?: string;
+  verifiedAt: string;
+}
+
+
 
 export interface KnockoutRadarResponse {
   analysisId: string;
@@ -675,6 +707,22 @@ export const api = {
       headers: getHeaders(),
     });
     return handleResponse<HeatmapSimulationResponse>(res);
+  },
+
+  async getProofOfWork(resumeId: string): Promise<ProofOfWorkResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/resumes/${resumeId}/proof-of-work`, {
+      headers: getHeaders(),
+    });
+    return handleResponse<ProofOfWorkResponse>(res);
+  },
+
+  async verifyProofOfWork(resumeId: string, repoUrl?: string): Promise<ProofOfWorkResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/resumes/${resumeId}/verify-proof-of-work`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ repoUrl }),
+    });
+    return handleResponse<ProofOfWorkResponse>(res);
   },
 
   async generateApplicationKit(data: {

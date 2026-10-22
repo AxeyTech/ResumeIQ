@@ -166,17 +166,17 @@ export default function RecruiterHeatmapModal({
               <button
                 onClick={loadHeatmapData}
                 disabled={loading}
-                className="p-2 rounded-xl text-ink-soft hover:text-ink dark:hover:text-moon border border-line dark:border-night-line"
+                className="min-h-[44px] min-w-[44px] p-2 rounded-xl text-ink-soft hover:text-ink dark:hover:text-moon border border-line dark:border-night-line flex items-center justify-center transition-colors"
                 title="Refresh Heatmap"
               >
-                <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
               </button>
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl text-ink-soft hover:text-ink dark:hover:text-moon border border-line dark:border-night-line"
+                className="min-h-[44px] min-w-[44px] p-2 rounded-xl text-ink-soft hover:text-ink dark:hover:text-moon border border-line dark:border-night-line flex items-center justify-center transition-colors"
                 title="Close modal (Esc)"
               >
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
           </div>

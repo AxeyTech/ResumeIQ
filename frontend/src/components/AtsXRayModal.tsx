@@ -175,7 +175,7 @@ export default function AtsXRayModal({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-ink-soft hover:text-ink dark:hover:text-moon transition-colors ml-1"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-ink-soft hover:text-ink dark:hover:text-moon transition-colors ml-1"
               aria-label="Close ATS X-Ray modal"
             >
               <X size={18} />

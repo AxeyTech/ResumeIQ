@@ -49,43 +49,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      // 1. Injected coordinates directly into CSS variables on root for native 60/120fps GPU compositor
+      // 1. Inject coordinates directly into CSS variables on root for native 60/120fps GPU compositor
       const root = document.documentElement
       root.style.setProperty('--theme-x', `${Math.round(x)}px`)
       root.style.setProperty('--theme-y', `${Math.round(y)}px`)
       root.style.setProperty('--theme-r', `${Math.ceil(endRadius)}px`)
 
-      // 2. Synchronous DOM update inside startViewTransition using flushSync (Zero pause / Zero delay)
-      const transition = startTransition(() => {
+      // 2. Synchronous DOM update inside startViewTransition using flushSync (Native GPU compositor handles the animation with zero microtask stutter)
+      startTransition(() => {
         flushSync(() => {
           root.classList.toggle('dark', next === 'dark')
           window.localStorage.setItem('resumeiq-theme', next)
           setTheme(next)
         })
       })
-
-      // 3. Fallback animate call for browsers requiring explicit element.animate on pseudoElement
-      transition.ready
-        .then(() => {
-          try {
-            root.animate(
-              {
-                clipPath: [
-                  `circle(0px at ${Math.round(x)}px ${Math.round(y)}px)`,
-                  `circle(${Math.ceil(endRadius)}px at ${Math.round(x)}px ${Math.round(y)}px)`,
-                ],
-              },
-              {
-                duration: 420,
-                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-                pseudoElement: '::view-transition-new(root)',
-              },
-            )
-          } catch {
-            // CSS @keyframes theme-circular-reveal executes natively on GPU compositor
-          }
-        })
-        .catch(() => {})
     },
     [theme],
   )

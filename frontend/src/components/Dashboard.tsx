@@ -37,7 +37,8 @@ import {
   Building2,
   ChevronUp,
   ShieldCheck,
-  Flame
+  Flame,
+  Code2
 } from 'lucide-react'
 import ScoreRing from './ScoreRing'
 import BulletOptimizer from './BulletOptimizer'
@@ -50,6 +51,7 @@ import ResumeBuilder from './ResumeBuilder'
 import MockInterviewSimulator from './MockInterviewSimulator'
 import InterviewDefenseCard from './InterviewDefenseCard'
 import RecruiterHeatmapModal from './RecruiterHeatmapModal'
+import ProofOfWorkModal from './ProofOfWorkModal'
 import CareerChatbot from './CareerChatbot'
 import AtsXRayModal from './AtsXRayModal'
 import ResuAvatar from './ResuAvatar'
@@ -137,6 +139,7 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
   // ATS X-Ray Robot Simulator Modal State (Feature 2)
   const [isXRayOpen, setIsXRayOpen] = useState(false)
   const [isHeatmapOpen, setIsHeatmapOpen] = useState(false)
+  const [isProofOfWorkOpen, setIsProofOfWorkOpen] = useState(false)
 
   // Profile Settings Modal State
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -614,6 +617,15 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                     </button>
 
                     <button
+                      onClick={() => setIsProofOfWorkOpen(true)}
+                      className="btn-outline-glass text-xs py-2 px-3 sm:px-3.5 flex items-center gap-1.5 transition-all text-ink dark:text-moon hover:border-emerald-500/60"
+                      title="Verify resume skills against connected GitHub repository code"
+                    >
+                      <Code2 size={13} className="text-emerald-500" />
+                      <span>Proof of Work</span>
+                    </button>
+
+                    <button
                       onClick={() => {
                         const input = document.createElement('input')
                         input.type = 'file'
@@ -850,8 +862,8 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                           </div>
                         </div>
 
-                        {/* Responsive 7-Button Suite Action Strip */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-2.5 pt-1">
+                        {/* Responsive 8-Button Suite Action Strip */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5 pt-1">
                           <button
                             onClick={() => setActiveSuiteTab('builder')}
                             className="btn-glow text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium"
@@ -894,6 +906,15 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
                           </button>
 
                           <button
+                            onClick={() => setIsProofOfWorkOpen(true)}
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-emerald-500/50 text-ink dark:text-moon"
+                            title="Verify claimed resume skills against real GitHub commits & architecture"
+                          >
+                            <Code2 size={14} className="text-emerald-500" />
+                            <span>Proof of Work</span>
+                          </button>
+
+                          <button
                             onClick={() => setIsXRayOpen(true)}
                             className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-g-blue/50 text-ink dark:text-moon"
                             title="Inspect raw machine text seen by corporate ATS parsers"
@@ -904,7 +925,7 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
 
                           <button
                             onClick={() => setActiveSuiteTab('interview')}
-                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-purple-500/50 text-ink dark:text-moon col-span-2 sm:col-span-1"
+                            className="btn-outline-glass text-xs py-2.5 px-3 flex items-center justify-center gap-2 font-medium hover:border-purple-500/50 text-ink dark:text-moon"
                           >
                             <Mic size={14} className="text-purple-500" />
                             <span>Mock Interview</span>
@@ -1642,6 +1663,16 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
           displayName={selectedResume.displayName || selectedResume.fileName}
           isOpen={isHeatmapOpen}
           onClose={() => setIsHeatmapOpen(false)}
+        />
+      )}
+
+      {/* 🛡️ GitHub Proof-of-Work Verification Engine Modal (Step 5) */}
+      {selectedResume && (
+        <ProofOfWorkModal
+          resumeId={selectedResume.id}
+          displayName={selectedResume.displayName || selectedResume.fileName}
+          isOpen={isProofOfWorkOpen}
+          onClose={() => setIsProofOfWorkOpen(false)}
         />
       )}
 

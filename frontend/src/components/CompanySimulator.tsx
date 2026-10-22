@@ -190,10 +190,10 @@ export default function CompanySimulator({ analysisId, resumeId }: CompanySimula
 
           <button
             onClick={fetchSimulations}
-            className="p-2 rounded-xl text-ink-soft hover:text-ink dark:hover:text-moon border border-line dark:border-night-line shrink-0"
+            className="min-w-[40px] min-h-[40px] flex items-center justify-center p-2 rounded-xl text-ink-soft hover:text-ink dark:hover:text-moon border border-line dark:border-night-line shrink-0 transition-colors"
             title="Refresh simulation"
           >
-            <RefreshCw size={13} />
+            <RefreshCw size={14} />
           </button>
         </div>
       </div>

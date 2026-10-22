@@ -97,6 +97,12 @@ Over **75% of resumes** are filtered out by automated Applicant Tracking Systems
 - **Real-Time 6-Second Gaze Path Animation**: Interactive simulation button where a glowing gaze cursor glides across the resume in real-time, displaying the recruiter's internal monologue second-by-second.
 - **Recruiter Blind Spot Diagnostics**: Flags high-impact metrics buried below the F-scan line (where over 82% of recruiters miss them) with instant re-ordering directives.
 
+### 10. 🛡️ GitHub Proof-of-Work Verification Engine (Step 5)
+- **Claimed Skill vs. Codebase Audit**: Deeply scans candidate GitHub repositories, extracting actual commit activity, dependency declarations (`package.json`, `requirements.txt`, `go.mod`), and production architectures.
+- **Automated Proof-of-Work (PoW) Scoring**: Cross-references resume skill claims against committed lines of code, test coverage, and architectural maturity (`GOLD_STANDARD`, `SILVER_STANDARD`, `EMERGING_PROOF`).
+- **Production Architecture Signals**: Detects containerization (Docker, Kubernetes), automated CI/CD pipelines, unit/integration testing suites, and microservice topologies.
+- **Verifiable Credential & Embeddable Badges**: Provides a tamper-proof verification code (`RIQ-POW-XXXXXX`), GitHub README markdown badges, and HTML portfolio widgets to eliminate candidate impostor syndrome and prove authentic expertise.
+
 ---
 
 ## 🎨 Design System & Responsiveness
@@ -118,10 +124,12 @@ ResumeIQ/
 ├── frontend/                     # React 18 + Vite + TypeScript + Tailwind CSS
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── AtsXRayModal.tsx           # Machine vision terminal & entity extractor
-│   │   │   ├── AtsReadinessBadgeModal.tsx # Verified credential, badges & LinkedIn share
+│   │   │   ├── ProofOfWorkModal.tsx       # GitHub proof-of-work codebase auditor & badge generator
 │   │   │   ├── RecruiterHeatmapModal.tsx  # 6-second eye-tracking heatmap & gaze simulator
 │   │   │   ├── InterviewDefenseCard.tsx   # Google XYZ auditor & reverse interview grilling matrix
+│   │   │   ├── CompanySimulator.tsx       # Big-4 ATS parser engine (Workday/Taleo/Greenhouse/Lever)
+│   │   │   ├── AtsXRayModal.tsx           # Machine vision terminal & entity extractor
+│   │   │   ├── AtsReadinessBadgeModal.tsx # Verified credential, badges & LinkedIn share
 │   │   │   ├── BulletOptimizer.tsx        # STAR rewriter & smart keyword injector
 │   │   │   ├── ApplicationKit.tsx         # Cover letter PDF generator & InMail suite
 │   │   │   ├── MockInterviewSimulator.tsx # Voice recognition & STAR interview coach
@@ -142,7 +150,7 @@ ResumeIQ/
 │   │   ├── db/migrations/        # Idempotent PostgreSQL DDL migrations
 │   │   ├── middleware/           # Rate limiting, AES auth guards, Multer memory storage
 │   │   ├── repositories/         # Parameterized SQL query layers
-│   │   ├── services/             # Gemini 2.5 LLM, PDF parser, Keyword matcher, Bullet optimizer
+│   │   ├── services/             # Gemini 2.5 LLM, PDF parser, Interview Defense, Multi-ATS, Heatmap Saliency, Proof-of-Work
 │   │   └── server.js             # Production entry point serving static bundle
 │
 ├── render.yaml                   # Automated Render Blueprint specification
