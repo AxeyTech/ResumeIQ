@@ -430,9 +430,9 @@ export default function Dashboard({ onBackToHome }: DashboardProps) {
           <button
             onClick={onBackToHome}
             className="btn-outline-glass flex items-center gap-1.5 text-xs py-2 px-3 sm:px-3.5"
-            title="Back to Landing Website"
+            title="Return to Home"
           >
-            <Home size={14} className="shrink-0" /> <span>Website</span>
+            <Home size={14} className="shrink-0" /> <span>Home</span>
           </button>
           <button
             onClick={logout}
