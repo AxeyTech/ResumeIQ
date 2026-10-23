@@ -479,8 +479,8 @@ export default function CareerChatbot({
       {/* Floating Trigger Button (Bottom-Right) */}
       {!isChatOpen && (
         <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-[90] flex items-center">
-          {/* Ambient Pulsing Halo Ring Behind Resu */}
-          <div className="absolute inset-0 rounded-full bg-cyan-400/25 blur-md animate-ping pointer-events-none scale-125" />
+          {/* Lightweight Ambient Pulsing Halo Ring Behind Resu */}
+          <div className="absolute inset-[-4px] rounded-full bg-cyan-400/20 animate-pulse pointer-events-none" />
 
           <motion.button
             initial={{ scale: 0, opacity: 0 }}

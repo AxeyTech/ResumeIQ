@@ -154,20 +154,18 @@ export default function ResuAvatar({
             }
       }
     >
-      {/* 1. Dynamic Holographic Orbital Energy Ring (for sm and above) */}
+      {/* 1. Dynamic Holographic Orbital Energy Ring (Hardware GPU compositor accelerated) */}
       {showOrbit && size !== 'xs' && (
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
-          className="absolute inset-[-6px] rounded-full pointer-events-none opacity-70"
+        <div
+          className="absolute inset-[-5px] rounded-full pointer-events-none opacity-60 animate-spin transform-gpu will-change-transform"
           style={{
+            animationDuration: '12s',
             background:
               currentMood === 'happy'
-                ? 'conic-gradient(from 0deg, transparent 0deg, rgba(52, 211, 153, 0.6) 180deg, transparent 360deg)'
+                ? 'conic-gradient(from 0deg, transparent 0deg, rgba(52, 211, 153, 0.7) 180deg, transparent 360deg)'
                 : currentMood === 'thinking'
-                ? 'conic-gradient(from 0deg, transparent 0deg, rgba(251, 191, 36, 0.6) 180deg, transparent 360deg)'
-                : 'conic-gradient(from 0deg, transparent 0deg, rgba(56, 189, 248, 0.5) 180deg, transparent 360deg)',
-            filter: 'blur(1.5px)',
+                ? 'conic-gradient(from 0deg, transparent 0deg, rgba(251, 191, 36, 0.7) 180deg, transparent 360deg)'
+                : 'conic-gradient(from 0deg, transparent 0deg, rgba(56, 189, 248, 0.6) 180deg, transparent 360deg)',
           }}
         />
       )}

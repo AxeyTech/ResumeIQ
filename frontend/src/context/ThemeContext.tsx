@@ -55,14 +55,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.style.setProperty('--theme-y', `${Math.round(y)}px`)
       root.style.setProperty('--theme-r', `${Math.ceil(endRadius)}px`)
 
-      // 2. Synchronous DOM update inside startViewTransition using flushSync (Native GPU compositor handles the animation with zero microtask stutter)
-      startTransition(() => {
+      // 2. Temporarily lock individual CSS transitions so the browser captures clean instant snapshots without dropped frames
+      root.classList.add('theme-transitioning')
+
+      // 3. Synchronous DOM update inside startViewTransition using flushSync
+      const transition = startTransition(() => {
         flushSync(() => {
           root.classList.toggle('dark', next === 'dark')
           window.localStorage.setItem('resumeiq-theme', next)
           setTheme(next)
         })
       })
+
+      // 4. Release transition lock smoothly once transition completes
+      transition.finished
+        .catch(() => {})
+        .finally(() => {
+          root.classList.remove('theme-transitioning')
+        })
     },
     [theme],
   )
