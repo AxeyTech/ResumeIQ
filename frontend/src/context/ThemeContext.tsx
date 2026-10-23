@@ -49,16 +49,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      // 1. Inject coordinates directly into CSS variables on root for native 60/120fps GPU compositor
       const root = document.documentElement
-      root.style.setProperty('--theme-x', `${Math.round(x)}px`)
-      root.style.setProperty('--theme-y', `${Math.round(y)}px`)
-      root.style.setProperty('--theme-r', `${Math.ceil(endRadius)}px`)
 
-      // 2. Temporarily lock individual CSS transitions so the browser captures clean instant snapshots without dropped frames
+      // 1. Temporarily lock individual CSS transitions so the browser captures clean instant snapshots without dropped frames
       root.classList.add('theme-transitioning')
 
-      // 3. Synchronous DOM update inside startViewTransition using flushSync
+      // 2. Synchronous DOM update inside startViewTransition using flushSync
       const transition = startTransition(() => {
         flushSync(() => {
           root.classList.toggle('dark', next === 'dark')
@@ -67,8 +63,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         })
       })
 
-      // 4. Release transition lock smoothly once transition completes
-      transition.finished
+      // 3. The instant the view transition is ready, smoothly expand the circular reveal ripple from the exact tap coordinates
+      transition.ready
+        .then(() => {
+          const anim = root.animate(
+            {
+              clipPath: [
+                `circle(0px at ${Math.round(x)}px ${Math.round(y)}px)`,
+                `circle(${Math.ceil(endRadius)}px at ${Math.round(x)}px ${Math.round(y)}px)`,
+              ],
+            },
+            {
+              duration: 400,
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              pseudoElement: '::view-transition-new(root)',
+            },
+          )
+          return anim.finished
+        })
         .catch(() => {})
         .finally(() => {
           root.classList.remove('theme-transitioning')
